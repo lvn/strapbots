@@ -2,10 +2,7 @@ var ZorkClient = require('./zork-client').ZorkClient;
 
 var zork;
 
-var _channel;
-zork = new ZorkClient(function(data) {
-  _channel && _channel.send(data);
-});
+clients = {};
 
 var BANNED_WORDS = new Set(['quit']);
 
@@ -16,7 +13,12 @@ module.exports = function zorkCmd(argv, response, channel) {
       return;
     }
   }
+
+  clients[channel.id] = clients[channel.id] || new ZorkClient(function(data) {
+    data.length > 0 && channel.send(data);
+    response.end('Starting up Zork client...');
+  });
+
   var cmd = words.join(' ');
-  _channel = channel;
-  zork.send(cmd);
+  clients[channel.id].send(cmd);
 };
