@@ -10,9 +10,7 @@ var ZorkClient = exports.ZorkClient = function ZorkClient(onData) {
   var self = this;
 
   var modulePath = __dirname + '/zork.exp';
-  this.expect = childProcess.spawn('expect', [modulePath], {
-    stdio: ['pipe', 'pipe', 'pipe']
-  });
+  this.expect = childProcess.spawn('expect', [modulePath]);
 
   this.expect.stdout.once('data', function(data) {
     self.ready = true;
