@@ -1,0 +1,3 @@
+[submodule "zorkmid"]
+	path = zorkmid
+	url = git@github.com:elvinyung/zorkmid.git
