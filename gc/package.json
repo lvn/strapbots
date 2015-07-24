@@ -1,0 +1,22 @@
+{
+  "name": "botstrap-gc",
+  "version": "1.0.0",
+  "description": "Random commit message bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "botstrap",
+    "git",
+    "commit"
+  ],
+  "author": "Elvin Yung <elvin@elvinyung.com>",
+  "license": "MIT",
+  "dependencies": {
+    "js-string-escape": "^1.0.0",
+    "lfmt": "^0.2.0",
+    "phantom": "^0.7.2",
+    "phantomjs": "^1.9.17"
+  }
+}
