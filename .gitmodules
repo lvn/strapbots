@@ -1,3 +1,6 @@
 [submodule "zorkmid"]
 	path = zorkmid
 	url = git@github.com:elvinyung/zorkmid.git
+[submodule "scalk"]
+	path = scalk
+	url = git@github.com:elvinyung/scalk.git
