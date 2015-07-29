@@ -24,6 +24,11 @@ var loadMacros = function loadMacros() {
           name = record.slice(0, spaceIndex),
           template = record.slice(spaceIndex + 1);
         macros[name] = template;
+
+        console.log(lfmt.format('loading macro {{name}} `{{template}}`', {
+          name: name,
+          template: template
+        });
       });
   } catch (err) {
     // log the error and clean the macros.
