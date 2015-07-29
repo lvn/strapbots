@@ -19,6 +19,8 @@ var loadMacros = function loadMacros() {
     var rawMacros = fs.readFileSync(saveFile).toString()
       .split('\n')
       .forEach(function(record) {
+        if (!record) return;
+
         // TODO: catch errors for records with no space
         var spaceIndex = record.indexOf(' '),
           name = record.slice(0, spaceIndex),
