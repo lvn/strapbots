@@ -64,8 +64,3 @@ module.exports = function(argv, response, logger) {
     });
   }
 };
-
-addMacro('pk', '(☞ﾟ∀ﾟ)☞ $@ (☞ﾟ∀ﾟ)☞');
-applyMacro('pk', ['#smash'], function(err, result) {
-  console.log(result);
-});
