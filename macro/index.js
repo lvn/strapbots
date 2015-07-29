@@ -50,17 +50,22 @@ module.exports = function(argv, response, logger) {
     var template = argv.slice(3).join(' ');
     addMacro(name, template, function(err) {
       if (!err) {
-        response.end('Successfully macroed {{name}} to `{{template}}`', {
+        response.end(lfmt.format('Successfully macroed {{name}} to `{{template}}`', {
           name: name,
           template: template
-        });
+        }));
       }
     });
   }
   else {
     var name = subcmd;
-    applyMacro(name, argv, function(err, result) {
+    applyMacro(name, argv.slice(2), function(err, result) {
       response.end(result || errMsgs.noMacro);
     });
   }
 };
+
+addMacro('pk', '(☞ﾟ∀ﾟ)☞ $@ (☞ﾟ∀ﾟ)☞');
+applyMacro('pk', ['#smash'], function(err, result) {
+  console.log(result);
+});
