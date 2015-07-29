@@ -3,7 +3,7 @@
 var fs = require('fs'),
   lfmt = require('lfmt');
 
-var saveFile = './saved.macros';
+var saveFile = process.cwd() + '/saved.macros';
 
 var macros = {};
 
