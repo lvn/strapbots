@@ -3,6 +3,8 @@
 var fs = require('fs'),
   lfmt = require('lfmt');
 
+var saveFile = __dirname + '/saved.macros';
+
 var macros = {};
 
 var errMsgs = {
@@ -11,12 +13,34 @@ var errMsgs = {
 };
 
 var loadMacros = function loadMacros() {
-
+  try {
+    // this scheme does not account for duplicate keys. later records with
+    // the same key will simply overwrite the template.
+    var rawMacros = fs.readFileSync(saveFile).toString()
+      .split('\n')
+      .forEach(function(record) {
+        // TODO: catch errors for records with no space
+        var spaceIndex = record.indexOf(' '),
+          name = record.slice(0, spaceIndex),
+          template = record.slice(spaceIndex + 1);
+        macros[name] = template;
+      });
+  } catch (err) {
+    // log the error and clean the macros.
+    console.error(err);
+    macros = {};
+  }
 };
 
 var addMacro = function addMacro(name, template, cb) {
   macros[name] = template;
-  cb && cb();
+  fs.appendFile(saveFile, lfmt.format('{{name}} {{template}}\n', {
+    name: name,
+    template: template
+  }), function(err) {
+    if (err) console.error(err);
+    cb && cb();
+  });
 };
 
 var applyMacro = function loadMacros(name, args, cb) {
