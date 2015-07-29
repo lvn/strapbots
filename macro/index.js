@@ -13,7 +13,7 @@ var errMsgs = {
 };
 
 var loadMacros = function loadMacros() {
-  if (macros !== {}) return;
+  if (Object.keys(macros) > 0) return;
 
   try {
     // this scheme does not account for duplicate keys. later records with
