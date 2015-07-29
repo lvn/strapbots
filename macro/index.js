@@ -13,6 +13,8 @@ var errMsgs = {
 };
 
 var loadMacros = function loadMacros() {
+  if (macros) return;
+
   try {
     // this scheme does not account for duplicate keys. later records with
     // the same key will simply overwrite the template.
