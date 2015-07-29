@@ -28,7 +28,7 @@ var loadMacros = function loadMacros() {
         console.log(lfmt.format('loading macro {{name}} `{{template}}`', {
           name: name,
           template: template
-        });
+        }));
       });
   } catch (err) {
     // log the error and clean the macros.
