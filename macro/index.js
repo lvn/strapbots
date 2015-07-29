@@ -8,7 +8,7 @@ var saveFile = __dirname + '/saved.macros';
 var macros = {};
 
 var errMsgs = {
-  incorrectUsage: '```macro```: you did something wrong.',
+  incorrectUsage: '`macro`: you did something wrong.',
   noMacro: 'Can\'t find that!'
 };
 
