@@ -3,7 +3,7 @@ var pointTable = {};
 
 module.exports = function(match, response) {
   var points = match[1],
-    multiplier = ('to' in match[2]) - ('from' in match[2]),
+    multiplier = ('to' === match[2]) - ('from' === match[2]),
     target = match[3];
 
 
