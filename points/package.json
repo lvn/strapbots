@@ -1,0 +1,15 @@
+{
+  "name": "botstrap-points",
+  "version": "1.0.0",
+  "description": "Award points to things.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "botstrap",
+    "points"
+  ],
+  "author": "Elvin Yung <elvin@elvinyung.com>",
+  "license": "MIT"
+}
