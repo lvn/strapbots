@@ -1,6 +1,6 @@
 {
   "name": "botstrap-points",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Award points to things.",
   "main": "index.js",
   "scripts": {
