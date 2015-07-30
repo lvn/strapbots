@@ -13,6 +13,7 @@ or
 ```json
 {
   "type": "match",
+  "require": "botstrap-points",
   "regex": {
     "pattern": "(\\d+) points (from|to) (.*)"
   }
