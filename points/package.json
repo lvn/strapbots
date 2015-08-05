@@ -1,6 +1,6 @@
 {
   "name": "botstrap-points",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Award points to things.",
   "main": "index.js",
   "scripts": {
@@ -11,5 +11,8 @@
     "points"
   ],
   "author": "Elvin Yung <elvin@elvinyung.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "mathjs": "^2.0.1"
+  }
 }
