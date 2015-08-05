@@ -12,7 +12,7 @@ var renderPoints = function renderPoints(points) {
     return 'way too many points';
   }
 
-  return points.toString + ' points';
+  return JSON.stringify(points) + ' points';
 };
 
 var points = function points(match, response) {
