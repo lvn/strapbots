@@ -62,13 +62,13 @@ var applyMacro = function loadMacros(name, args, cb) {
   var result = template
     .replace('$@', args.join(' '))
     .replace(/\$(\d+)/g, function(match, p1) {
-      return macros[p1];
+      return (macros[Number(p1)] || '');
     });
 
   cb && cb(null, result);
 };
 
-module.exports = function(argv, response, logger) {
+var macro = function macro(argv, response, logger) {
   loadMacros();
 
   var subcmd = argv[1];
@@ -97,3 +97,5 @@ module.exports = function(argv, response, logger) {
     });
   }
 };
+
+module.exports = macro;
