@@ -12,6 +12,10 @@ var renderPoints = function renderPoints(points) {
     return 'way too many points';
   }
 
+  if (points === -Infinity) {
+    return 'the opposite of way too many points';
+  }
+
   return JSON.stringify(points) + ' points';
 };
 
