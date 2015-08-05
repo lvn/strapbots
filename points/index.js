@@ -25,4 +25,12 @@ var points = function points(match, response) {
   response.end(target + ': ' + renderPoints(pointTable[target]));
 };
 
+points.metadata = {
+  name: 'points',
+  match: /^(.*) point(s?) (to|from) (.*)$/,
+  info: {
+    description: 'Give arbitrary points to people'
+  }
+};
+
 module.exports = points;
