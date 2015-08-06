@@ -21,9 +21,17 @@ var renderPoints = function renderPoints(points) {
 
 var points = function points(match, response) {
   var matchExpr = match[1],
-    points = Math.round(math.eval(matchExpr)),
+    points = 0,
     multiplier = ('to' === match[3]) - ('from' === match[3]),
     target = match[4];
+
+  try {
+    points = Math.round(math.eval(matchExpr));
+  }
+  catch (e) {
+    console.log('points eval error');
+    points = 0;
+  }
 
   pointTable[target] = (pointTable[target] || 0) + (points * multiplier);
   response.end(target + ': ' + renderPoints(pointTable[target]));
