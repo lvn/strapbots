@@ -71,7 +71,7 @@ var applyMacro = function loadMacros(name, args, cb) {
 var macro = function macro(argv, response, logger) {
   loadMacros();
 
-  if (!argv.length < 2) {
+  if (argv.length < 2) {
     logger.error('`macro` called incorrectly: ', argv);
     response.end(errMsgs.incorrectUsage);
     return;
