@@ -71,12 +71,13 @@ var applyMacro = function loadMacros(name, args, cb) {
 var macro = function macro(argv, response, logger) {
   loadMacros();
 
-  var subcmd = argv[1];
-  if (!subcmd) {
+  if (!argv.length < 2) {
     logger.error('`macro` called incorrectly: ', argv);
     response.end(errMsgs.incorrectUsage);
     return;
   }
+
+  var subcmd = argv[1];
 
   if (subcmd === 'set') {
     var name = argv[2];
