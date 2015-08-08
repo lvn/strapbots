@@ -62,7 +62,7 @@ var applyMacro = function loadMacros(name, args, cb) {
   var result = template
     .replace('$@', args.join(' '))
     .replace(/\$(\d+)/g, function(match, p1) {
-      return (macros[Number(p1)] || '');
+      return (args[Number(p1)] || '');
     });
 
   cb && cb(null, result);
