@@ -9,7 +9,8 @@ var macros = {};
 
 var errMsgs = {
   incorrectUsage: '`macro`: you did something wrong.',
-  noMacro: 'Can\'t find that!'
+  noMacro: 'Can\'t find that!',
+  cantBeEmpty: 'Macro can\'t be empty!'
 };
 
 var loadMacros = function loadMacros() {
@@ -82,6 +83,12 @@ var macro = function macro(argv, response, logger) {
   if (subcmd === 'set') {
     var name = argv[2];
     var template = argv.slice(3).join(' ').split('\n')[0];
+
+    if (template.length <= 0) {
+      response.end(cantBeEmpty)
+      return;
+    }
+
     addMacro(name, template, function(err) {
       if (!err) {
         response.end(lfmt.format('Successfully macroed {{name}} to `{{template}}`', {
