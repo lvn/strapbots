@@ -81,7 +81,7 @@ var macro = function macro(argv, response, logger) {
 
   if (subcmd === 'set') {
     var name = argv[2];
-    var template = argv.slice(3).join(' ');
+    var template = argv.slice(3).join(' ').split('\n')[0];
     addMacro(name, template, function(err) {
       if (!err) {
         response.end(lfmt.format('Successfully macroed {{name}} to `{{template}}`', {
