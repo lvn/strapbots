@@ -85,7 +85,7 @@ var macro = function macro(argv, response, logger) {
     var template = argv.slice(3).join(' ').split('\n')[0];
 
     if (template.length <= 0) {
-      response.end(cantBeEmpty)
+      response.end(errMsgs.cantBeEmpty)
       return;
     }
 
