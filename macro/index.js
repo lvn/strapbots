@@ -94,7 +94,11 @@ var macro = function macro(argv, response, logger) {
   else {
     var name = subcmd;
     applyMacro(name, argv.slice(2), function(err, result) {
-      response.end(result || errMsgs.noMacro);
+      reply = result || errMsgs.noMacro;
+      logger.log(lfmt.format('Sending reply: {{reply}}', {
+        reply: reply
+      }));
+      response.end(reply);
     });
   }
 };
