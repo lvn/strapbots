@@ -104,14 +104,13 @@ var isRecursive = function isRecursive(name, template) {
   if (!nestedMacros) return false;
 
   nestedMacros = nestedMacros.map(function (str) {
-    return str.substring(2, str.length - 1);
+    var firstSpace = str.indexOf(' ');
+    return str.substring(2, firstSpace === -1 ? (str.length - 1) : firstSpace);
   });
-  var recursive = false;
 
-  nestedMacros.some(function (macro) {
+  return nestedMacros.some(function (macro) {
     return macro === name || (macros[macro] && isRecursive(name, macros[macro]));
   });
-  return recursive;
 };
 
 var badBrackets = function badBrackets(template) {
