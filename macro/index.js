@@ -10,7 +10,9 @@ var macros = {};
 var errMsgs = {
   incorrectUsage: '`macro`: you did something wrong.',
   noMacro: 'Can\'t find that!',
-  cantBeEmpty: 'Macro can\'t be empty!'
+  cantBeEmpty: 'Macro can\'t be empty!',
+  cantBeRecursive: 'Macro can\'t be recursive!',
+  badBrackets: 'Macro has mismatched brackets!'
 };
 
 var loadMacros = function loadMacros() {
@@ -66,7 +68,67 @@ var applyMacro = function loadMacros(name, args, cb) {
       return (args[Number(p1)] || '');
     });
 
-  cb && cb(null, result);
+  cb && resolveNesting(result, cb);
+};
+
+var resolveNesting = function resolveNesting(template, cb) {
+  var lastNested = template.lastIndexOf('$(');
+  if (lastNested === -1) cb(null, template);
+  else {
+    var brackets = 1;
+    var index = lastNested + 2;
+
+    while (brackets > 0) {
+      if (template[index+1] && template[index] === '$' && template[index+1] === '(') {
+        brackets += 1;
+      } else if (template[index] === ')') {
+        brackets -= 1;
+      }
+      index += 1;
+    }
+
+    var nestedMacro = template.substring(lastNested+2, index-1),
+      firstSpace = nestedMacro.indexOf(' '),
+      name = firstSpace === -1 ? nestedMacro : nestedMacro.substring(0, firstSpace),
+      args = firstSpace === -1 ? [] : nestedMacro.substring(firstSpace+1).split(' ');
+
+    applyMacro(name, args, function(err, result) {
+      resolveNesting(template.slice(0, lastNested) + result + template.slice(index), cb);
+    });
+  }
+};
+
+var isRecursive = function isRecursive(name, template) {
+  var nestedMacros = template.match(/\$\(.*?(\)|\ )/g);
+
+  if (!nestedMacros) return false;
+
+  nestedMacros = nestedMacros.map(function (str) {
+    return str.substring(2, str.length - 1);
+  });
+  var recursive = false;
+
+  nestedMacros.some(function (macro) {
+    return macro === name || (macros[macro] && isRecursive(name, macros[macro]));
+  });
+  return recursive;
+};
+
+var badBrackets = function badBrackets(template) {
+  var index = 0,
+    brackets = 0;
+
+  while (template[index]) {
+    if (template[index+1] && template[index] === '$' && template[index+1] === '(') {
+      brackets += 1;
+    } else if (template[index] === ')') {
+      brackets -= 1;
+    }
+    if (brackets < 0) return true;
+    index += 1;
+  }
+  if (brackets != 0) return true;
+  return false;
 };
 
 var macro = function macro(argv, response, logger) {
@@ -85,7 +147,13 @@ var macro = function macro(argv, response, logger) {
     var template = argv.slice(3).join(' ').split('\n')[0];
 
     if (template.length <= 0) {
-      response.end(errMsgs.cantBeEmpty)
+      response.end(errMsgs.cantBeEmpty);
+      return;
+    } else if (badBrackets(template)) {
+      response.end(errMsgs.badBrackets);
+      return;
+    } else if (isRecursive(name, template)) {
+      response.end(errMsgs.cantBeRecursive);
       return;
     }
 
