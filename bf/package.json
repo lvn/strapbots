@@ -1,0 +1,11 @@
+{
+  "name": "botstrap-bf",
+  "version": "1.0.0",
+  "description": "Slack bot for interpreting That Language.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Elvin Yung <elvin@elvinyung.com>",
+  "license": "MIT"
+}
