@@ -10,7 +10,7 @@ var unescape = function unescape(value){
 }
 
 module.exports = function(argv, channel, response, logger) {
-  var input = unescape(argv.slice(1).join('')),
+  var input = unescape(argv.slice(1).join(' ')),
     inputSplit = input.split(/\"/g);
     code = inputSplit[0],
     stdin = (inputSplit[1] || '').split('').map(function(c) {
