@@ -13,7 +13,7 @@ module.exports = function(argv, channel, response, logger) {
   var input = unescape(argv.slice(1).join('')),
     inputSplit = input.split(/\"/g);
     code = inputSplit[0],
-    stdin = inputSplit[1].split('').map(function(c) {
+    stdin = (inputSplit[1] || '').split('').map(function(c) {
       return c.charCodeAt(0);
     });
 
