@@ -24,6 +24,7 @@ var ops = {
   },
   ',': function(state) {
     // does nothing for now
+    state.memory[state.memPtr] = state.input() || 0;
   },
   '[': function(state) {
     state.loops.unshift(state.codePtr);
