@@ -118,15 +118,14 @@ var badBrackets = function badBrackets(template) {
     brackets = 0;
 
   while (template[index]) {
-    if (template[index+1] && template[index] === '$' && template[index+1] === '(') {
+    if (template.substring(index, index + 2) === '$(') {
       brackets += 1;
     } else if (template[index] === ')') {
       brackets -= 1;
     }
-    if (brackets < 0) return true;
     index += 1;
   }
-  if (brackets != 0) return true;
+  if (brackets > 0) return true;
   return false;
 };
 
