@@ -166,14 +166,16 @@ var macro = function macro(argv, response, logger) {
     });
   }
   else if (subcmd === 'list') {
+    var expand = (argv.indexOf('--expand') !== -1);
     var resBody = Object.keys(macros)
       .map(function(key) {
+        if (!expand) return key;
         return lfmt.format('{{name}} - ```{{template}}```', {
           name: key,
           template: macros[key]
         });
       })
-      .join('\n');
+      .join(expand ? '\n': ', ');
 
     resBody = resBody || errMsgs.noMacros;
     response.end(resBody);
