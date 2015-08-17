@@ -55,7 +55,7 @@ var addMacro = function addMacro(name, template, cb) {
   });
 };
 
-var applyMacro = function loadMacros(name, args, cb) {
+var applyMacro = function applyMacro(name, args, cb) {
   var template = macros[name];
   if (!template) {
     cb && cb(new Error('Macro not found'));
