@@ -12,7 +12,8 @@ var errMsgs = {
   noMacro: 'Can\'t find that!',
   cantBeEmpty: 'Macro can\'t be empty!',
   cantBeRecursive: 'Macro can\'t be recursive!',
-  badBrackets: 'Macro has mismatched brackets!'
+  badBrackets: 'Macro has mismatched brackets!',
+  noMacros: 'There are no macros.'
 };
 
 var loadMacros = function loadMacros() {
@@ -163,6 +164,19 @@ var macro = function macro(argv, response, logger) {
         }));
       }
     });
+  }
+  else if (subcmd === 'list') {
+    var resBody = Object.keys(macros)
+      .map(function(key) {
+        return lfmt.format('{{name}} - ```{{template}}```', {
+          name: key,
+          template: macros[key]
+        });
+      })
+      .join('\n');
+
+    resBody = resBody || errMsgs.noMacros;
+    response.end(resBody);
   }
   else {
     var name = subcmd;
