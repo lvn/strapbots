@@ -67,4 +67,13 @@ var gc = function gc(response) {
   });
 };
 
+gc.metadata = {
+  name: 'gc',
+  command: ['gc', 'git-commit']
+  info: {
+    description: 'Generate random git commit messages',
+    usage: 'gc'
+  }
+};
+
 module.exports = gc;
