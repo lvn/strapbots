@@ -9,7 +9,7 @@ var unescape = function unescape(value){
     .replace(/&amp;/g, '&');
 }
 
-module.exports = function(argv, channel, response, logger) {
+var bf = function bf(argv, channel, response, logger) {
   var input = unescape(argv.slice(1).join(' ')),
     inputSplit = input.split(/\"/g);
     code = inputSplit[0],
@@ -34,3 +34,14 @@ module.exports = function(argv, channel, response, logger) {
     response.end('Invalid BF program');
   }
 };
+
+bf.metadata = {
+  name: "brainfuck",
+  command: "brainfuck",
+  info: {
+    description: "Run brainfuck code",
+    usage: "brainfuck {code}"
+  }
+};
+
+module.exports = bf;
