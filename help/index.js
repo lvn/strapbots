@@ -58,13 +58,17 @@ var help = function help(argv, bot, response, logger) {
       .map(function renderStep(name) {
         var command = commands[name];
         if (!command.metadata) {
-          return name;
+          return lfmt.format('`{{name}}`', {
+            name: name
+          });
         }
 
         name = command.metadata.name || name;
 
         if (!command.metadata.info) {
-          return name;
+          return lfmt.format('`{{name}}`', {
+            name: name
+          });
         }
         var description = command.metadata.info.description;
 
