@@ -1,0 +1,15 @@
+{
+  "name": "botstrap-help",
+  "version": "1.0.0",
+  "description": "Botstrap generic help module",
+  "main": "index.js",
+  "dependencies": {
+    "lfmt": "^0.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Elvin Yung <elvin@elvinyung.com>",
+  "license": "MIT"
+}
