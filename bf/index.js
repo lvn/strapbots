@@ -40,7 +40,7 @@ bf.metadata = {
   command: "brainfuck",
   info: {
     description: "Run brainfuck code",
-    usage: "brainfuck {code}"
+    usage: "brainfuck {code} {stdin}"
   }
 };
 
