@@ -7,7 +7,7 @@ var unescape = function unescape(value){
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&amp;/g, '&');
-}
+};
 
 var bf = function bf(argv, channel, response, logger) {
   var input = unescape(argv.slice(1).join(' ')),
