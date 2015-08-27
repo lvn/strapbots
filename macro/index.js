@@ -31,7 +31,7 @@ var loadMacros = function loadMacros() {
         var spaceIndex = record.indexOf(' '),
           name = record.slice(0, spaceIndex),
           template = record.slice(spaceIndex + 1);
-        macros[name] = template;
+        macros[name] = decodeURIComponent(template);
 
         console.log(lfmt.format('loading macro {{name}} `{{template}}`', {
           name: name,
@@ -49,7 +49,7 @@ var addMacro = function addMacro(name, template, cb) {
   macros[name] = template;
   fs.appendFile(saveFile, lfmt.format('{{name}} {{template}}\n', {
     name: name,
-    template: template
+    template: encodeURIComponent(template)
   }), function(err) {
     if (err) console.error(err);
     cb && cb();
@@ -143,7 +143,7 @@ var macro = function macro(argv, response, logger) {
 
   if (subcmd === 'set') {
     var name = argv[2];
-    var template = argv.slice(3).join(' ').split('\n')[0];
+    var template = argv.slice(3).join(' ');
 
     if (template.length <= 0) {
       response.end(errMsgs.cantBeEmpty);
@@ -158,7 +158,7 @@ var macro = function macro(argv, response, logger) {
 
     addMacro(name, template, function(err) {
       if (!err) {
-        response.end(lfmt.format('Successfully macroed {{name}} to `{{template}}`', {
+        response.end(lfmt.format('Successfully macroed {{name}} to ```{{template}}```', {
           name: name,
           template: template
         }));
