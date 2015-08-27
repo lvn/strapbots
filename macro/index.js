@@ -94,7 +94,11 @@ var resolveNesting = function resolveNesting(template, cb) {
       args = firstSpace === -1 ? [] : nestedMacro.substring(firstSpace+1).split(' ');
 
     applyMacro(name, args, function(err, result) {
-      resolveNesting(template.slice(0, lastNested) + result + template.slice(index), cb);
+      console.log(result);
+      resolveNesting(template.slice(0, lastNested)
+        + (result || '')
+        + template.slice(index),
+      cb);
     });
   }
 };
