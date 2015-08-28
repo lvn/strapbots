@@ -160,12 +160,18 @@ var macro = function macro(argv, response, logger) {
       return;
     }
 
+    var oldTemplate = macros[name];
     addMacro(name, template, function(err) {
       if (!err) {
-        response.end(lfmt.format('Successfully macroed {{name}} to ```{{template}}```', {
+        var respBody = (oldTemplate ?
+          lfmt.format('Overwriting old template ```{{oldTemplate}}```\n', {
+            oldTemplate: oldTemplate
+          }) : '');
+        respBody += lfmt.format('Successfully macroed {{name}} to ```{{template}}```', {
           name: name,
           template: template
-        }));
+        })
+        response.end(respBody);
       }
     });
   }
