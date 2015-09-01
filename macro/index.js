@@ -134,11 +134,12 @@ var badBrackets = function badBrackets(template) {
   return false;
 };
 
-var macro = function macro(argv, response, logger) {
+var macro = function macro(argv, message, response, logger) {
+  logger.log('macro called with message', message);
   loadMacros();
 
   if (argv.length < 2) {
-    logger.error('`macro` called incorrectly: ', argv);
+    logger.error('`macro` called incorrectly: ', argv.join(' '));
     response.end(errMsgs.incorrectUsage);
     return;
   }
