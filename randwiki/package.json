@@ -1,0 +1,19 @@
+{
+  "name": "botstrap-randwiki",
+  "version": "1.0.0",
+  "description": "something",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "botstrap",
+    "wiki"
+  ],
+  "author": "Elvin Yung <elvin@elvinyung.com>",
+  "license": "MIT",
+  "dependencies": {
+    "lfmt": "^0.2.0",
+    "node-wikipedia": "0.0.2"
+  }
+}

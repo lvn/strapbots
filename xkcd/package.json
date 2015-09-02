@@ -1,0 +1,16 @@
+{
+  "name": "botstrap-xkcd",
+  "version": "1.0.0",
+  "description": "Relevant xkcd bot for botstrap",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "xkcd",
+    "slack",
+    "bot"
+  ],
+  "author": "Elvin Yung <elvinyung1@gmail.com>",
+  "license": "MIT"
+}

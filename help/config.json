@@ -1,0 +1,13 @@
+{
+  "name": "olivaw",
+  "description": "Drop-in config file for quickly testing stuff",
+  "token": "xoxb-5162288069-vPtDX3hYCI4EC7E475IUCg7n",
+  "bundles": [],
+  "plugins": [
+    {
+      "type": "command",
+      "command": "help",
+      "require": "."
+    }
+  ]
+}
