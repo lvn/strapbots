@@ -1,0 +1,11 @@
+{
+  "name": "combo-breaker",
+  "token": "TOKEN GOES HERE",
+  "plugins": [
+    {
+      "type": "event",
+      "event": "message",
+      "require": "."
+    }
+  ]
+}
