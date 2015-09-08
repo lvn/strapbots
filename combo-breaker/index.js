@@ -3,7 +3,7 @@
 var counts = {};
 
 var comboBreaker = function(message, response, logger) {
-  var text = message.text;
+  var text = message.text.trim().toLowerCase();
   counts[text] = (counts[text] || 0) + 1;
   logger.log(message, counts[text]);
   if (counts[text] >= 2) {
