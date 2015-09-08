@@ -47,4 +47,27 @@ describe('comboBreaker', function() {
     comboBreaker(mockMessage, mockChannel, mockResponseObj, mockLogger);
     expect(mockResponseObj.end).not.to.have.been.called;
   });
+
+  it('doesn\'t call response.end if message appears in different channels', function() {
+
+    var mockMessage = {
+      text: 'baz'
+    };
+    var mockChannel1 = {
+      id: '1'
+    };
+    var mockChannel2 = {
+      id: '2'
+    };
+    var mockResponseObj = {
+      end: sinon.spy()
+    };
+    var mockLogger = {
+      log: function(){}
+    };
+
+    comboBreaker(mockMessage, mockChannel1, mockResponseObj, mockLogger);
+    comboBreaker(mockMessage, mockChannel2, mockResponseObj, mockLogger);
+    expect(mockResponseObj.end).not.to.have.been.called;
+  });
 });
