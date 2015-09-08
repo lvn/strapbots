@@ -14,6 +14,9 @@ describe('comboBreaker', function() {
     var mockMessage = {
       text: 'foo'
     };
+    var mockChannel = {
+      id: '1'
+    };
     var mockResponseObj = {
       end: sinon.spy()
     };
@@ -21,8 +24,8 @@ describe('comboBreaker', function() {
       log: function(){}
     };
 
-    comboBreaker(mockMessage, mockResponseObj, mockLogger);
-    comboBreaker(mockMessage, mockResponseObj, mockLogger);
+    comboBreaker(mockMessage, mockChannel, mockResponseObj, mockLogger);
+    comboBreaker(mockMessage, mockChannel, mockResponseObj, mockLogger);
     expect(mockResponseObj.end).to.have.been.calledWith('C-C-C-COMBO BREAKER');
   });
 
@@ -31,6 +34,9 @@ describe('comboBreaker', function() {
     var mockMessage = {
       text: 'bar'
     };
+    var mockChannel = {
+      id: '1'
+    };
     var mockResponseObj = {
       end: sinon.spy()
     };
@@ -38,7 +44,7 @@ describe('comboBreaker', function() {
       log: function(){}
     };
 
-    comboBreaker(mockMessage, mockResponseObj, mockLogger);
+    comboBreaker(mockMessage, mockChannel, mockResponseObj, mockLogger);
     expect(mockResponseObj.end).not.to.have.been.called;
   });
 });
