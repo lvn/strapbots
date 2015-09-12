@@ -2,6 +2,8 @@
 
 var counts = {};
 
+var STACK_LIMIT = 5;
+
 var timeDiffSeconds = function timeDiff(a, b) {
   a = a || Date.now();
   b = b || Date.now();
@@ -11,24 +13,25 @@ var timeDiffSeconds = function timeDiff(a, b) {
 var comboBreaker = function(message, channel, response, logger) {
   // get channel
   var channelId = channel.id;
-  counts[channelId] = counts[channelId] || {};
+  counts[channelId] = counts[channelId] || [];
   var channelCounts = counts[channelId];
 
   if (message.text) {
     // normalize text
     var text = message.text.trim().toLowerCase();
-    channelCounts[text] = channelCounts[text] || [];
 
     // insert text time into record
-    var now = Date.now();
-    channelCounts[text].unshift(now);
-    logger.log(message, channelCounts[text].length);
-
-    if (timeDiffSeconds(channelCounts[text][0]) < 21600 &&
-        channelCounts[text].length >= 2) {
+    var textIndex = channelCounts.indexOf(text);
+    if (textIndex != -1) {
       logger.log('breaking combo', message);
       response.end('C-C-C-COMBO BREAKER');
-      delete counts[channelId][text];
+      channelCounts.splice(textIndex, 1);
+    }
+    else {
+      channelCounts.unshift(text);
+      if (channelCounts.length > 5) {
+        channelCounts.pop();
+      }
     }
   }
 };
