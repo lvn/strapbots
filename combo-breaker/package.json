@@ -1,6 +1,6 @@
 {
   "name": "botstrap-combo-breaker",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Extremely crude combo breaker.",
   "main": "index.js",
   "scripts": {
