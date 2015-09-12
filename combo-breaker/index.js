@@ -16,7 +16,7 @@ var comboBreaker = function(message, channel, response, logger) {
   counts[channelId] = counts[channelId] || [];
   var channelCounts = counts[channelId];
 
-  if (message.text) {
+  if (message.text && message.text[0] != '!') {
     // normalize text
     var text = message.text.trim().toLowerCase();
 
