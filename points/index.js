@@ -19,7 +19,7 @@ var renderPoints = function renderPoints(points) {
   return JSON.stringify(points) + ' points';
 };
 
-var points = function points(match, response) {
+var points = function points(match, response, logger) {
   var matchExpr = match[1],
     points = 0,
     multiplier = ('to' === match[3]) - ('from' === match[3]),
@@ -29,7 +29,7 @@ var points = function points(match, response) {
     points = Math.round(math.eval(matchExpr));
   }
   catch (e) {
-    console.log('points eval error');
+    logger.log('points eval error');
     points = 0;
   }
 
