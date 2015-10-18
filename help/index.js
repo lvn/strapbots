@@ -17,7 +17,7 @@ var renderHelpPage = function buildHelpPage(query, command) {
     });
   }
 
-  if (!command.metadata || !command.metadata.info) {
+  if (!command.metadata || command.metadata.info) {
     return lfmt.format(errorMsgs.noHelpData, {
       name: command.name || query
     });
@@ -25,12 +25,16 @@ var renderHelpPage = function buildHelpPage(query, command) {
 
   var rendered = lfmt.format(helpPageTemplate, {
     name: command.name || query,
-    description: command.metadata.info.description || errorMsgs.noDesc
+    description: command.metadata.info.description ||
+      command.metadata.description ||
+      errorMsgs.noDesc
   });
 
-  if (command.metadata.info.usage) {
+  var usage = command.metadata.info ?
+    command.metadata.info.usage : command.metadata.usage;
+  if (usage) {
     rendered += lfmt.format('\nUsage: `{{usage}}`', {
-      usage: command.metadata.info.usage
+      usage: usage
     });
   }
 
@@ -86,10 +90,8 @@ var help = function help(argv, bot, response, logger) {
 help.metadata = {
   name: 'help',
   command: 'help',
-  info: {
-    description: 'Shows help page for commands',
-    usage: 'help {command}'
-  }
+  description: 'Shows help page for commands',
+  usage: 'help {command}'
 };
 
 module.exports = help;
