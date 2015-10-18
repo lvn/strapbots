@@ -206,9 +206,13 @@ var macro = function macro(argv, message, response, logger) {
 macro.metadata = {
   name: 'macro',
   command: 'macro',
-  info: {
-    description: 'Set a string template macro',
-    usage: 'macro [set {template}|{name} {variables...}]'
+  description: 'Manipulate string template macros',
+  subcommands: {
+    'set': {
+      name: 'set',
+      description: 'Set a string template macro',
+      usage: 'macro set {name} {template}'
+    }
   }
 };
 
