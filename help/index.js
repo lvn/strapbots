@@ -10,6 +10,26 @@ var errorMsgs = {
 
 var helpPageTemplate = '{{name}} -- {{description}}';
 
+// given a root (as an object), find subcommand as a path.
+var findCommand = function findCommand(root, path) {
+
+  var node = root;
+  var child;
+  while (path.length > 0) {
+    var target = path.shift();
+
+    child = node.subcommands &&
+      node.subcommands.length > 0 &&
+      node.subcommands[target];
+
+    if (!child) {
+      break;
+    }
+  };
+
+  return child;
+};
+
 var renderHelpPage = function buildHelpPage(query, command) {
   if (!command) {
     return lfmt.format(errorMsgs.noSuchCommand, {
@@ -38,6 +58,17 @@ var renderHelpPage = function buildHelpPage(query, command) {
     });
   }
 
+  var subcommands = command.metadata.subcommands;
+  if (subcommands && subcommands.length > 0) {
+    rendered += lfmt.format('\nSubcommands:')
+    subcommands.forEach(function(subcommand) {
+      rendered += lfmt.format('\n- {{name}}: `{{description}}`', {
+        name: subcommand.name,
+        description: subcommand.description || errorMsgs.noDesc
+      });
+    });
+  };
+
   return rendered;
 }
 
@@ -46,11 +77,11 @@ var help = function help(argv, bot, response, logger) {
     command: argv.join(' ')
   }));
 
-  var query = argv.slice(1)[0],
+  var query = argv.slice(1),
     commands = bot.commands;
 
-  if (query) {
-    var command = commands[query];
+  if (query.length > 0) {
+    var command = findCommand(commands, query);
     response.end(renderHelpPage(query, command));
   }
   else {
