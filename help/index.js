@@ -11,23 +11,24 @@ var errorMsgs = {
 var helpPageTemplate = '{{name}} -- {{description}}';
 
 // given a root (as an object), find subcommand as a path.
-var findCommand = function findCommand(root, path) {
+var findCommand = function findCommand(root, query) {
 
   var node = root;
   var child;
+  var path = query.slice();
   while (path.length > 0) {
     var target = path.shift();
 
-    child = node.subcommands &&
-      node.subcommands.length > 0 &&
-      node.subcommands[target];
+    var subcommands = node.metadata && node.metadata.subcommands || node;
+    child = subcommands[target];
 
     if (!child) {
       break;
     }
+    node = child;
   };
 
-  return child;
+  return node;
 };
 
 var renderHelpPage = function buildHelpPage(query, command) {
@@ -37,32 +38,34 @@ var renderHelpPage = function buildHelpPage(query, command) {
     });
   }
 
-  if (!command.metadata || command.metadata.info) {
+  if (!command.metadata && !command.description) {
     return lfmt.format(errorMsgs.noHelpData, {
       name: command.name || query
     });
   }
 
+  var metadata = command.metadata || command;
+
   var rendered = lfmt.format(helpPageTemplate, {
-    name: command.name || query,
-    description: command.metadata.info.description ||
-      command.metadata.description ||
+    name: query.join(' '),
+    description: (metadata.info && metadata.info.description) ||
+      metadata.description ||
       errorMsgs.noDesc
   });
 
-  var usage = command.metadata.info ?
-    command.metadata.info.usage : command.metadata.usage;
+  var usage = metadata.info ? metadata.info.usage : metadata.usage;
   if (usage) {
     rendered += lfmt.format('\nUsage: `{{usage}}`', {
       usage: usage
     });
   }
 
-  var subcommands = command.metadata.subcommands;
-  if (subcommands && subcommands.length > 0) {
+  var subcommands = metadata.subcommands;
+  if (subcommands) {
     rendered += lfmt.format('\nSubcommands:')
-    subcommands.forEach(function(subcommand) {
-      rendered += lfmt.format('\n- {{name}}: `{{description}}`', {
+    Object.keys(subcommands).forEach(function(key) {
+      var subcommand = subcommands[key];
+      rendered += lfmt.format('\n- `{{name}}`: {{description}}', {
         name: subcommand.name,
         description: subcommand.description || errorMsgs.noDesc
       });
