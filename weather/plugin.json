@@ -1,0 +1,9 @@
+{
+  "name": "weather",
+  "command": ["weather"],
+  "description": "Displays the current weather.",
+  "usage": "weather [city]",
+  "apiRoot": "http://api.openweathermap.org/data/2.5/weather?",
+  "defaultLoc": "Waterloo,on",
+  "units": "metric"
+}
