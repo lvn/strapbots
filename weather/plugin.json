@@ -5,5 +5,9 @@
   "usage": "weather [city]",
   "apiRoot": "http://api.openweathermap.org/data/2.5/weather?",
   "defaultLoc": "Waterloo,on",
-  "units": "metric"
+  "units": "metric",
+  "errMsgs": {
+    "apiKey": ":question: :key: (API key not properly configured)",
+    "generic": ":question: :exclamation: (Insufficient data for meaningful answer)"
+  }
 }

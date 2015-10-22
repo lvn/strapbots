@@ -31,7 +31,7 @@ var main = function main(argv, response, logger) {
   var unitSystem = main.metadata.units;
 
   if (!appId) {
-    response.end(':question: :key: (API key not properly configured)')
+    response.end(main.metadata.errMsgs.apiKey)
     return;
   }
 
@@ -48,7 +48,7 @@ var main = function main(argv, response, logger) {
     if (err || res.statusCode != 200 || body.cod != 200 ) {
       logger.error('Weather API call to', reqUrl, 'errored', err,
         'with status code', body.cod || res.statusCode)
-      response.end(':question: :exclamation:');
+      response.end(main.metadata.errMsgs.generic);
       return;
     }
 
