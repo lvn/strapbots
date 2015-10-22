@@ -22,16 +22,16 @@ var tempUnit = {
   'default': '°K'
 };
 
-var main = function main(argv, response, logger) {
-  var queryLoc = argv.slice(1).join(' ') || main.metadata.defaultLoc;
+var main = function main(argv, response, logger, config) {
+  var queryLoc = argv.slice(1).join(' ') || config.defaultLoc;
 
   // config things
-  var apiRoot = main.metadata.apiRoot;
-  var appId = main.metadata.appId;
-  var unitSystem = main.metadata.units;
+  var apiRoot = config.apiRoot;
+  var appId = config.appId;
+  var unitSystem = config.units;
 
   if (!appId) {
-    response.end(main.metadata.errMsgs.apiKey)
+    response.end(config.errMsgs.apiKey)
     return;
   }
 
@@ -48,7 +48,7 @@ var main = function main(argv, response, logger) {
     if (err || res.statusCode != 200 || body.cod != 200 ) {
       logger.error('Weather API call to', reqUrl, 'errored', err,
         'with status code', body.cod || res.statusCode)
-      response.end(main.metadata.errMsgs.generic);
+      response.end(config.errMsgs.generic);
       return;
     }
 
