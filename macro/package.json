@@ -1,6 +1,6 @@
 {
   "name": "botstrap-macro",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "Macroing stuff in slack",
   "main": "index.js",
   "scripts": {
