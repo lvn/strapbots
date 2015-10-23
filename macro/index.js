@@ -103,6 +103,14 @@ var resolveNesting = function resolveNesting(template, cb) {
   }
 };
 
+// extract and replace formatted URLs.
+var unescapeLinks = function unescape(message) {
+  var linkRegex = /<([^(#C)(@U)\!][^\|]*)\|*(.*)>/;
+  return message.replace(linkRegex, function(match, p1, p2) {
+    return p2 || p1;
+  });
+};
+
 var isRecursive = function isRecursive(name, template) {
   var nestedMacros = template.match(/\$\(.*?(\)|\ )/g);
 
@@ -148,7 +156,7 @@ var macro = function macro(argv, message, response, logger) {
 
   if (subcmd === 'set') {
     var name = argv[2];
-    var template = argv.slice(3).join(' ');
+    var template = unescapeLinks(argv.slice(3).join(' '));
 
     if (template.length <= 0) {
       response.end(errMsgs.cantBeEmpty);
