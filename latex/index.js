@@ -70,6 +70,12 @@ var compileLatex = function compileLatex(src, templateFile, outputDir, cb) {
 
 var main = function main(argv, channel, response, logger, config) {
   var src = argv.slice(1).join(' ');
+
+  if (src.length <= 0) {
+    response.end(config.errMsgs.emptySrc);
+    return;
+  }
+
   imgur.setClientId(config.clientId);
   logger.log('got latex request', src);
   compileLatex(src, config.templateFile, config.outputDir)

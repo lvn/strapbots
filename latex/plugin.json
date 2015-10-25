@@ -6,6 +6,7 @@
   "templateFile": "template.tex",
   "outputDir": "latex",
   "errMsgs": {
-    "generic": ":question: :question: :question: :question: :question:"
+    "generic": ":question: :question: :question: :question: :question:",
+    "emptySrc": ":expressionless:"
   }
 }
