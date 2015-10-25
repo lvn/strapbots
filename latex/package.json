@@ -1,6 +1,6 @@
 {
   "name": "botstrap-latex",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "LaTeX compilation plugin for Botstrap",
   "main": "index.js",
   "scripts": {
