@@ -1,0 +1,25 @@
+{
+  "name": "botstrap-latex",
+  "version": "1.0.0",
+  "description": "LaTeX compilation plugin for Botstrap",
+  "main": "index.js",
+  "scripts": {
+    "preinstall": "./install.sh",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "botstrap",
+    "latex",
+    "slack"
+  ],
+  "author": "Elvin Yung <elvin@elvinyung.com>",
+  "license": "MIT",
+  "dependencies": {
+    "child-process-promise": "^1.1.0",
+    "imgur": "^0.1.7",
+    "lfmt": "^0.2.1",
+    "q": "^1.4.1",
+    "q-io": "^1.13.1",
+    "uuid": "^2.0.1"
+  }
+}
