@@ -1,0 +1,11 @@
+{
+  "name": "latex",
+  "command": ["latex"],
+  "description": "Compile a LaTeX thing and then reposts it as a PNG.",
+  "usage": "latex [code]",
+  "templateFile": "template.tex",
+  "outputDir": "latex",
+  "errMsgs": {
+    "generic": ":question: :question: :question: :question: :question:"
+  }
+}
