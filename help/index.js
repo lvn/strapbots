@@ -103,7 +103,7 @@ var help = function help(argv, bot, response, logger) {
 
         name = command.metadata.name || name;
 
-        if (!command.metadata.info) {
+        if (!command.metadata.info && !command.metadata.description) {
           return lfmt.format('`{{name}}`', {
             name: name
           });
