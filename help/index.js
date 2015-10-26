@@ -108,7 +108,8 @@ var help = function help(argv, bot, response, logger) {
             name: name
           });
         }
-        var description = command.metadata.info.description ||
+        var description = command.metadata.info ?
+          command.metadata.info.description :
           command.metadata.description;
 
         return lfmt.format('`{{name}}` - {{description}}', {
