@@ -40,7 +40,7 @@ var renderHelpPage = function buildHelpPage(query, command) {
 
   if (!command.metadata && !command.description) {
     return lfmt.format(errorMsgs.noHelpData, {
-      name: command.name || query
+      name: command.name || query.join(' ')
     });
   }
 
