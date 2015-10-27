@@ -64,7 +64,7 @@ var main = function main(argv, response, logger, config) {
     }
 
     if (typeof body.main.temp === 'number') {
-      resBody += body.main.temp + tempUnit[unitSystem];
+      resBody += body.main.temp + ' ' + tempUnit[unitSystem];
     }
     response.end(resBody);
   });
