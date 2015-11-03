@@ -22,6 +22,10 @@ var tempUnit = {
   'default': '°K'
 };
 
+var normalize = function(str) {
+  return str.toLowerCase().replace(/\s/g, '');
+};
+
 var main = function main(argv, response, logger, config) {
   var queryLoc = argv.slice(1).join(' ') || config.defaultLoc;
 
@@ -59,8 +63,13 @@ var main = function main(argv, response, logger, config) {
       })
       .join(' ') + ' ';
 
-    if (queryLoc.toLowerCase() != body.name.toLowerCase()) {
-      resBody = 'Assuming ' + body.name + ', ' + body.sys.country +': ' + resBody
+
+    var queryName = normalize(queryLoc);
+    var actualName = normalize([body.name, body.sys.country].join(','));
+
+    if (queryName != actualName) {
+        resBody = 'Assuming ' + body.name + ', '
+          + body.sys.country + ': ' + resBody;
     }
 
     if (typeof body.main.temp === 'number') {
