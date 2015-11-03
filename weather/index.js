@@ -23,6 +23,8 @@ var tempUnit = {
   'default': '°K'
 };
 
+var NONE = 'none';
+
 var normalize = function(str) {
   return str.toLowerCase().replace(/\s/g, '');
 };
@@ -66,7 +68,9 @@ var main = function main(argv, response, logger, config) {
 
 
     var queryName = normalize(queryLoc);
-    var actualName = normalize([body.name, body.sys.country].join(','));
+    var actualName = normalize((body.sys.country === NONE ?
+      [body.name] :
+      [body.name, body.sys.country]).join(','));
 
     if (queryName != actualName) {
         resBody = 'Assuming ' + body.name + ', '
