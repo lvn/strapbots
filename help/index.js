@@ -55,8 +55,12 @@ var renderHelpPage = function buildHelpPage(query, command) {
 
   var usage = metadata.info ? metadata.info.usage : metadata.usage;
   if (usage) {
-    rendered += lfmt.format('\nUsage: `{{usage}}`', {
-      usage: usage
+    usage = Array.isArray(usage) ? usage : [usage];
+    rendered += lfmt.format('\nUsage:');
+    usage.forEach(function(item) {
+      rendered += lfmt.format('\n- `{{item}}`', {
+        item: item
+      });
     });
   }
 
