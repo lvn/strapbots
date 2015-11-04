@@ -1,0 +1,15 @@
+{
+  "name": "botstrap-choose",
+  "version": "1.0.0",
+  "description": "Chooses a random item",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "botstrap",
+    "random"
+  ],
+  "author": "Elvin Yung <elvin@elvinyung.com>",
+  "license": "MIT"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "choose",
+  "command": ["choose"],
+  "description": "Chooses randomly from a set of items or a range",
+  "usage": [
+    "choose <items...>",
+    "choose [--range | --intrange] <low> <high>"
+  ],
+  "errMsgs": {
+    "generic": ":cry: :1234:"
+  }
+}
