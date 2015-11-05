@@ -2,6 +2,8 @@
 
 var request = require('request');
 var qs = require('querystring');
+var chrono = require('chrono-node');
+var moment = require('moment');
 
 var icons = {
   '01d': ['sunny'],
@@ -17,11 +19,26 @@ var icons = {
   '50': ['foggy']
 };
 
+var iconToEmoji = function iconToEmoji(key) {
+  var result = (icons[key] || icons[key.slice(0, 2)])
+    .map(function(emoji) {
+      return ':' + emoji + ':';
+    })
+    .join(' ') + ' ';
+  return result;
+};
+
 var tempUnit = {
   'metric': '°C',
   'imperial': '°F',
   'default': '°K'
 };
+
+var ms = {}
+ms.inSecond = 1000;
+ms.inMinute = 60 * ms.inSecond;
+ms.inHour = 60 * ms.inMinute;
+ms.inDay = 24 * ms.inHour;
 
 var NONE = 'none';
 
@@ -29,57 +46,147 @@ var normalize = function(str) {
   return str.toLowerCase().replace(/\s/g, '');
 };
 
+// Basic date comparator that checks if a is greater than, less than, or equal
+// to b, where some threshold (defaulting to 1000 ms) is given for checking
+// approximate equivalency.
+// If a > b, returns some d > 0.
+// If a ~= b, return 0.
+// If a < b, returns some d < 0.
+var cmpDate = function cmpDate(a, b, threshold) {
+  a = a || Date.now();
+  b = b || Date.now();
+  threshold = threshold || ms.inSecond;
+
+  var diff = a - b;
+  return Math.abs(diff) > threshold ? diff : 0;
+};
+
+// parse a query for the location and time.
+var parseQuery = function parseQuery(query) {
+  var result = {};
+  var parsedChrono = chrono.parse(query)[0];
+
+  if (parsedChrono) {
+    result.when = parsedChrono.start.date();
+    result.where = query.split(parsedChrono.text)[0].trim();
+
+    if (!result.where) {
+      delete result.where;
+    }
+  }
+  else {
+    result.where = query;
+  }
+
+  return result;
+};
+
+var parseBody = function parseBody(body, query, config) {
+  var wIcon = body.weather[0].icon;
+  var resBody = iconToEmoji(body.weather[0].icon);
+
+  var queryName = normalize(query.where);
+  var actualName = normalize((body.sys.country === NONE ?
+    [body.name] :
+    [body.name, body.sys.country]).join(','));
+
+  if (queryName != actualName) {
+      resBody = 'Assuming ' + body.name + ', '
+        + body.sys.country + ': ' + resBody;
+  }
+
+  if (typeof body.main.temp === 'number') {
+    resBody += body.main.temp + ' ' + tempUnit[config.units];
+  }
+
+  return resBody;
+};
+
+var parseBodyForecast = function parseBodyForecast(body, query, config) {
+  var resBody = '';
+  var queryName = normalize(query.where);
+  var actualName = normalize((body.city.country === NONE ?
+    [body.city.name] :
+    [body.city.name, body.city.country]).join(','));
+
+  if (queryName != actualName) {
+      resBody += 'Assuming ' + body.city.name + ', '
+        + body.city.country + ': ';
+  }
+
+  var forecastStart = new Date((body.list[0].dt * ms.inSecond));
+  var queryWhenUtc = new Date(query.when +
+    (forecastStart.getTimezoneOffset() * ms.inMinute));
+  var indx = Math.round((queryWhenUtc - forecastStart) / (3 * ms.inHour));
+
+  if (indx >= 0 && indx < body.list.length) {
+    var forecastEntry = body.list[indx];
+    resBody += iconToEmoji(forecastEntry.weather[0].icon);
+    if (typeof forecastEntry.main.temp === 'number') {
+      resBody += forecastEntry.main.temp + ' ' + tempUnit[config.units];
+    }
+
+    resBody += ' on ' + moment(forecastEntry.dt * ms.inSecond)
+      .format(config.dateFormat);
+
+    return resBody;
+  };
+
+  return config.errMsgs.cantSeeFuture;
+};
+
+var parseBodyHistory = function parseBodyForecast(body, query, config) {
+  return config.errMsgs.cantSeePast;
+};
+
+var bodyParsers = {
+  history: parseBodyHistory,
+  forecast: parseBodyForecast,
+  weather: parseBody
+};
+
 var main = function main(argv, response, logger, config) {
-  var queryLoc = argv.slice(1).join(' ') || config.defaultLoc;
+  var query = parseQuery(argv.slice(1).join(' '));
+  query.where = query.where || config.defaultLoc;
+  var queryTime = query.when;
+  var timeDiff = cmpDate(queryTime);
 
   // config things
   var apiRoot = config.apiRoot;
+  var apiEndpoint = (
+    (timeDiff > 0 && config.endpoints.forecast) ||
+    (timeDiff < 0 && config.endpoints.history) ||
+    config.endpoints.default);
   var appId = config.appId;
-  var unitSystem = config.units;
 
   if (!appId) {
     response.end(config.errMsgs.apiKey)
     return;
   }
 
-  logger.log('Got weather command with arguments', argv.slice(1));
-  var reqUrl = apiRoot + qs.stringify({
+  logger.log('Got weather command with query', query);
+  var reqUrl = apiRoot + apiEndpoint + '?' + qs.stringify({
     appid: appId,
-    q: queryLoc,
-    units: unitSystem
+    q: query.where,
+    units: config.units
   });
 
-  request.get(reqUrl, function(err, res, body) {
-    body = JSON.parse(body);
+  if (apiEndpoint === config.endpoints.history) {
+    // hack: no API access to history endpoint for now
+    response.end(config.errMsgs.cantSeePast);
+    return;
+  }
 
-    if (err || res.statusCode != 200 || body.cod != 200 ) {
+  request.get(reqUrl, function(err, res, body) {
+    if (err || res.statusCode != 200 || parseInt(body.cod != 200) ) {
       logger.error('Weather API call to', reqUrl, 'errored', err,
         'with status code', body.cod || res.statusCode)
       response.end(config.errMsgs.generic);
       return;
     }
 
-    var wIcon = body.weather[0].icon;
-    var resBody = (icons[wIcon] || icons[wIcon.slice(0, 2)])
-      .map(function(emoji) {
-        return ':' + emoji + ':';
-      })
-      .join(' ') + ' ';
-
-
-    var queryName = normalize(queryLoc);
-    var actualName = normalize((body.sys.country === NONE ?
-      [body.name] :
-      [body.name, body.sys.country]).join(','));
-
-    if (queryName != actualName) {
-        resBody = 'Assuming ' + body.name + ', '
-          + body.sys.country + ': ' + resBody;
-    }
-
-    if (typeof body.main.temp === 'number') {
-      resBody += body.main.temp + ' ' + tempUnit[unitSystem];
-    }
+    body = JSON.parse(body);
+    var resBody = bodyParsers[apiEndpoint](body, query, config);
     response.end(resBody);
   });
 };
