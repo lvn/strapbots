@@ -3,11 +3,19 @@
   "command": ["weather"],
   "description": "Displays the current weather.",
   "usage": "weather [city]",
-  "apiRoot": "http://api.openweathermap.org/data/2.5/weather?",
+  "apiRoot": "http://api.openweathermap.org/data/2.5/",
+  "endpoints": {
+    "forecast": "forecast",
+    "history": "history",
+    "default": "weather"
+  },
   "defaultLoc": "Waterloo,on",
   "units": "metric",
   "errMsgs": {
     "apiKey": ":question: :key: (API key not properly configured)",
-    "generic": ":question: :exclamation: (Insufficient data for meaningful answer)"
-  }
+    "generic": ":question: :exclamation: (Insufficient data for meaningful answer)",
+    "cantSeePast": ":x: :clock1: :back: (I can't go back in time!)",
+    "cantSeeFuture": ":x: :clock10: :soon: (Too far into the future)"
+  },
+  "dateFormat": "dddd, MMMM Do YYYY, h:mm a (UTCZ)"
 }
