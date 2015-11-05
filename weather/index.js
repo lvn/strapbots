@@ -178,7 +178,7 @@ var main = function main(argv, response, logger, config) {
   }
 
   request.get(reqUrl, function(err, res, body) {
-    if (err || res.statusCode != 200 || parseInt(body.cod != 200) ) {
+    if (err || res.statusCode != 200 || parseInt(body.cod) != 200) {
       logger.error('Weather API call to', reqUrl, 'errored', err,
         'with status code', body.cod || res.statusCode)
       response.end(config.errMsgs.generic);
