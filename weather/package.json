@@ -1,6 +1,6 @@
 {
   "name": "botstrap-weather",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "OpenWeatherMap-integrated weather Botstrap command",
   "main": "index.js",
   "scripts": {
