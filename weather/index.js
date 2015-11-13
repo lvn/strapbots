@@ -39,8 +39,11 @@ var toKmPerHr = function toKmPerHr(speed, units) {
   return speed * kmHInMs;
 };
 
+// draw wind emoji to correspond with wind speed.
+// the formula for the number of emoji drawn is essentially:
+// Math.floor(((wind speed as beaufort number) / 2) - 1)
 var renderWindEmoji = function renderWindEmoji(speed, units) {
-  var bounds = [6.0, 12.0, 29.0, 62.0];  // in km/h
+  var bounds = [12.0, 29.0, 50.0, 75.0, 103.0];  // in km/h
   return bounds.filter(function(bound) {
     return toKmPerHr(speed, units) > bound;
   }).map(function() {
