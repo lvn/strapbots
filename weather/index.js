@@ -86,13 +86,15 @@ var parseBody = function parseBody(body, query, config) {
   var resBody = iconToEmoji(body.weather[0].icon);
 
   var queryName = normalize(query.where);
-  var actualName = normalize((body.sys.country === NONE ?
+  var location = body.sys;
+  var cityName = body.name || body.sys.name;
+  var actualName = normalize(((location.country === NONE) ?
     [body.name] :
-    [body.name, body.sys.country]).join(','));
+    [body.name, location.country]).join(','));
 
   if (queryName != actualName) {
-      resBody = 'Assuming ' + body.name + ', '
-        + body.sys.country + ': ' + resBody;
+      resBody = 'Assuming ' + cityName + ', '
+        + location.country + ': ';
   }
 
   if (typeof body.main.temp === 'number') {
@@ -103,17 +105,6 @@ var parseBody = function parseBody(body, query, config) {
 };
 
 var parseBodyForecast = function parseBodyForecast(body, query, config) {
-  var resBody = '';
-  var queryName = normalize(query.where);
-  var actualName = normalize((body.city.country === NONE ?
-    [body.city.name] :
-    [body.city.name, body.city.country]).join(','));
-
-  if (queryName != actualName) {
-      resBody += 'Assuming ' + body.city.name + ', '
-        + body.city.country + ': ';
-  }
-
   var forecastStart = new Date((body.list[0].dt * ms.inSecond));
   var queryWhenUtc = new Date(query.when +
     (forecastStart.getTimezoneOffset() * ms.inMinute));
@@ -121,10 +112,9 @@ var parseBodyForecast = function parseBodyForecast(body, query, config) {
 
   if (indx >= 0 && indx < body.list.length) {
     var forecastEntry = body.list[indx];
-    resBody += iconToEmoji(forecastEntry.weather[0].icon);
-    if (typeof forecastEntry.main.temp === 'number') {
-      resBody += forecastEntry.main.temp + ' ' + tempUnit[config.units];
-    }
+
+    forecastEntry.sys = body.city;  // hack: normalize forcast format
+    var resBody = parseBody(forecastEntry, query, config);
 
     resBody += ' on ' + moment(forecastEntry.dt * ms.inSecond)
       .format(config.dateFormat);
