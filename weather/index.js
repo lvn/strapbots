@@ -28,6 +28,26 @@ var iconToEmoji = function iconToEmoji(key) {
   return result;
 };
 
+var KmInMile = 1.60934;
+var kmHInMs = 3.6;
+var toKmPerHr = function toKmPerHr(speed, units) {
+  if (units == 'imperial') {
+    return speed * KmInMile;
+  }
+
+  // units should be m/s by default
+  return speed * kmHInMs;
+};
+
+var renderWindEmoji = function renderWindEmoji(speed, units) {
+  var bounds = [6.0, 12.0, 29.0, 62.0];  // in km/h
+  return bounds.filter(function(bound) {
+    return toKmPerHr(speed, units) > bound;
+  }).map(function() {
+    return ':dash:';
+  }).join(' ');
+};
+
 var tempUnit = {
   'metric': '°C',
   'imperial': '°F',
@@ -82,8 +102,7 @@ var parseQuery = function parseQuery(query) {
 };
 
 var parseBody = function parseBody(body, query, config) {
-  var wIcon = body.weather[0].icon;
-  var resBody = iconToEmoji(body.weather[0].icon);
+  var resBody = '';
 
   var queryName = normalize(query.where);
   var location = body.sys;
@@ -92,10 +111,18 @@ var parseBody = function parseBody(body, query, config) {
     [body.name] :
     [body.name, location.country]).join(','));
 
+
   if (queryName != actualName) {
-      resBody = 'Assuming ' + cityName + ', '
+      resBody += 'Assuming ' + cityName + ', '
         + location.country + ': ';
   }
+
+  // add weather icons
+  var wIcon = body.weather[0].icon;
+  resBody += iconToEmoji(body.weather[0].icon);
+
+  // add wind icons
+  resBody += renderWindEmoji(body.wind.speed, config.units) + ' ';
 
   if (typeof body.main.temp === 'number') {
     resBody += body.main.temp + ' ' + tempUnit[config.units];
