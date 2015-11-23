@@ -1,0 +1,6 @@
+{
+  "redisNamespace": "psh:",
+  "redisKeys": {
+    "groups": "groups"
+  }
+}

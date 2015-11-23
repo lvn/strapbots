@@ -1,0 +1,23 @@
+{
+  "name": "psh",
+  "command": ["psh"],
+  "description": "Publish and subscribe to things.",
+  "subcommands": {
+    "subscribe": {
+      "description": "Subscribe to one or more mention groups",
+      "usage": "psh [subscribe|sub] [groups...]"
+    },
+    "unsubscribe": {
+        "description": "Unsubscribe from one or more mention groups",
+        "usage": "psh [unsubscribe|unsub] [groups...]"
+    },
+    "list": {
+      "description": "List all the mention groups",
+      "usage": "psh list"
+    }
+  },
+  "errMsgs": {
+    "generic": ":question: :question: :question: :question: :question:",
+    "noGroups": ":nothings: (No groups exist.)"
+  }
+}
