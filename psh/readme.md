@@ -7,20 +7,20 @@ Config goes something like this:
 
 ```json
 "services": [{
-    "name": "pshService",
-    "require": "psh",
-    "config": {
-      "redisOpts": {
-        "host": "127.0.0.1",
-        "port": 6379
-      }
+  "name": "pshService",
+  "require": "psh",
+  "config": {
+    "redisOpts": {
+      "host": "127.0.0.1",
+      "port": 6379
     }
-  }],
+  }
+}],
 "plugins": [{
-    "type": "command",
-    "command": "psh/command",
-    "require": "./command"
-  }]
+  "type": "command",
+  "command": "psh/command",
+  "require": "./command"
+}]
 ```
 
 ### Commands
