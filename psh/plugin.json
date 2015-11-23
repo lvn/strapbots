@@ -4,14 +4,17 @@
   "description": "Publish and subscribe to things.",
   "subcommands": {
     "subscribe": {
+      "name": "subscribe",
       "description": "Subscribe to one or more mention groups",
       "usage": "psh [subscribe|sub] [groups...]"
     },
     "unsubscribe": {
-        "description": "Unsubscribe from one or more mention groups",
-        "usage": "psh [unsubscribe|unsub] [groups...]"
+      "name": "unsubscribe",
+      "description": "Unsubscribe from one or more mention groups",
+      "usage": "psh [unsubscribe|unsub] [groups...]"
     },
     "list": {
+      "name": "list",
       "description": "List all the mention groups",
       "usage": "psh list"
     }
