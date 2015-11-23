@@ -8,7 +8,7 @@ Config goes something like this:
 ```json
 "services": [{
     "name": "pshService",
-    "require": "botstrap-psh",
+    "require": "psh",
     "config": {
       "redisOpts": {
         "host": "127.0.0.1",
@@ -18,7 +18,7 @@ Config goes something like this:
   }],
 "plugins": [{
     "type": "command",
-    "command": "botstrap-psh/command",
+    "command": "psh/command",
     "require": "./command"
   }]
 ```
