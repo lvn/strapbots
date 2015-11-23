@@ -1,0 +1,20 @@
+{
+  "name": "psh",
+  "version": "1.0.0",
+  "description": "Botstrap Slack mention groups",
+  "main": "index.js",
+  "dependencies": {
+    "redis-namespace": "git+https://github.com/evansolomon/node-redis-namespace.git"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "botstrap",
+    "slack",
+    "mention"
+  ],
+  "author": "Elvin Yung <elvin@elvinyung.com>",
+  "license": "MIT"
+}
