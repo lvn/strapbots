@@ -13,8 +13,39 @@ var errMsgs = {
   cantBeEmpty: 'Macro can\'t be empty!',
   cantBeRecursive: 'Macro can\'t be recursive!',
   badBrackets: 'Macro has mismatched brackets!',
-  noMacros: 'There are no macros.'
+  noMacros: 'There are no macros.',
+  nameReserved: 'Can\'t overwrite a reserved name!',
+  emptyResponse: '<result was empty>'
 };
+
+var builtInMacros = {};
+builtInMacros.echo = function(cb, args) {
+  cb(args.join(' '));
+};
+builtInMacros.echo.description = 'returns the arguments'
+
+builtInMacros.if = function(cb, args) {
+  cb(args[0] ? args[1] : args[2]);
+};
+builtInMacros.if.description = 'if $0, then returns $1, else $2'
+
+builtInMacros.random = function(cb, args) {
+  cb(args[Math.floor(Math.random() * args.length)]);
+};
+builtInMacros.random.description = 'returns randomly from arguments';
+
+builtInMacros.map = function(cb, args) {
+  var valmap = {};
+  var key = args.pop();
+  while (args.length > 0) {
+    valmap[args.shift()] = args.shift();
+  };
+  cb(valmap[key]);
+};
+builtInMacros.map.description = 'Builds a mapping.';
+
+const OPENBRK = '$(';
+const CLOSEBRK = ')';
 
 var loadMacros = function loadMacros() {
   if (Object.keys(macros).length > 0) return;
@@ -56,6 +87,105 @@ var addMacro = function addMacro(name, template, cb) {
   });
 };
 
+var baseApplyMacro = function baseApplyMacro(callee, args, cb, callStack) {
+  var template = macros[callee];
+  if (!template) {
+    cb && cb(new Error('Macro not found'));
+    return;
+  }
+
+  var result;
+  if (typeof template === 'function') {
+    template(function(result) {
+      cb && cb(null, result);
+    }, args);
+  }
+  else {
+    // this converts it to valid macro source.
+    var resultSrc = template
+      .replace(/\$@/g, args.join(' '))
+      .replace(/\$(\d+)/g, function(match, p1) {
+        return (args[Number(p1)] || '');
+      });
+
+    // tokenize and parse this source
+    var tokens = tokenizeExpr(resultSrc);
+    if (tokens.indexOf(OPENBRK) !== -1) {
+      parseTokens(tokens, 'echo', cb, callStack);
+    } else {
+      cb(null, resultSrc);
+    }
+  }
+};
+
+
+var tokenizeExpr = function tokenizeExpr(expr) {
+  return expr.split(/(\$\(|\)|\s)/g)
+    .filter(function(s) {
+      return s.trim().length
+    });
+};
+
+var parseTokens = function parseTokens(tokens, callee, cb, callStack) {
+  // hack: if no cb, we don't have to do anything since everything we do
+  // is invisible.
+  if (!cb) {
+    return;
+  }
+
+  // do call stack things
+  callStack = callStack || [];
+  callStack.push(callee);
+
+  // initialize nesting stack
+  var stack = [];
+  var stackFrame = {
+    callee: callee,
+    args: []
+  };
+
+  callStack = callStack || [];
+
+  // read tokens left to right
+  while (tokens.length > 0) {
+    var token = tokens.shift();
+    if (token === OPENBRK) {
+      var newCallee = tokens.shift();
+      if (callStack.indexOf(newCallee) != -1) {
+        cb(new Error(errMsgs.cantBeRecursive));
+        break;
+      }
+      else if (macros[newCallee] === undefined) {
+        cb(new Error(errMsgs.noMacro));
+        break;
+      }
+      else {
+        stack.push(stackFrame);
+        stackFrame = {
+          callee: newCallee,
+          args: []
+        };
+      }
+    }
+    else if (token === CLOSEBRK && stack.length > 0) {
+      baseApplyMacro(stackFrame.callee, stackFrame.args,
+        function (err, result) {
+          if (err) {
+            cb(err);
+            return;
+          }
+          stackFrame = stack.pop();
+          stackFrame.args.push(result);
+        });
+    }
+    else {
+      stackFrame.args.push(token);
+    }
+  }
+
+  baseApplyMacro(stackFrame.callee, stackFrame.args, cb);
+};
+
 var applyMacro = function applyMacro(name, args, cb) {
   var template = macros[name];
   if (!template) {
@@ -63,45 +193,20 @@ var applyMacro = function applyMacro(name, args, cb) {
     return;
   }
 
-  var result = template
-    .replace(/\$@/g, args.join(' '))
-    .replace(/\$(\d+)/g, function(match, p1) {
-      return (args[Number(p1)] || '');
-    });
-
-  cb && resolveNesting(result, cb);
-};
-
-var resolveNesting = function resolveNesting(template, cb) {
-  var lastNested = template.lastIndexOf('$(');
-  if (lastNested === -1) cb(null, template);
+  var result;
+  if (typeof template === 'function') {
+    template(cb, args);
+  }
   else {
-    var brackets = 1;
-    var index = lastNested + 2;
-
-    while (brackets > 0) {
-      if (template[index+1] && template[index] === '$' && template[index+1] === '(') {
-        brackets += 1;
-      } else if (template[index] === ')') {
-        brackets -= 1;
-      }
-      index += 1;
-    }
-
-    var nestedMacro = template.substring(lastNested+2, index-1),
-      firstSpace = nestedMacro.indexOf(' '),
-      name = firstSpace === -1 ? nestedMacro : nestedMacro.substring(0, firstSpace),
-      args = firstSpace === -1 ? [] : nestedMacro.substring(firstSpace+1).split(' ');
-
-    applyMacro(name, args, function(err, result) {
-      console.log(result);
-      resolveNesting(template.slice(0, lastNested)
-        + (result || '')
-        + template.slice(index),
-      cb);
-    });
+    result = template
+      .replace(/\$@/g, args.join(' '))
+      .replace(/\$(\d+)/g, function(match, p1) {
+        return (args[Number(p1)] || '');
+      });
+    cb && resolveNesting(result, cb);
   }
 };
+
 
 // extract and replace formatted URLs.
 var unescapeLinks = function unescape(message) {
@@ -111,40 +216,12 @@ var unescapeLinks = function unescape(message) {
   });
 };
 
-var isRecursive = function isRecursive(name, template) {
-  var nestedMacros = template.match(/\$\(.*?(\)|\ )/g);
-
-  if (!nestedMacros) return false;
-
-  nestedMacros = nestedMacros.map(function (str) {
-    var firstSpace = str.indexOf(' ');
-    return str.substring(2, firstSpace === -1 ? (str.length - 1) : firstSpace);
-  });
-
-  return nestedMacros.some(function (macro) {
-    return macro === name || (macros[macro] && isRecursive(name, macros[macro]));
-  });
-};
-
-var badBrackets = function badBrackets(template) {
-  var index = 0,
-    brackets = 0;
-
-  while (template[index]) {
-    if (template.substring(index, index + 2) === '$(') {
-      brackets += 1;
-    } else if (template[index] === ')') {
-      brackets -= 1;
-    }
-    index += 1;
-  }
-  if (brackets > 0) return true;
-  return false;
-};
-
-var macro = function macro(argv, message, response, logger) {
+var macro = function macro(argv, message, channel, client, response, config, logger) {
   logger.log('macro called with message', message);
   loadMacros();
+
+  // load builtins
+  macros = Object.assign(macros, builtInMacros);
 
   if (argv.length < 2) {
     logger.error('`macro` called incorrectly: ', argv.join(' '));
@@ -156,18 +233,12 @@ var macro = function macro(argv, message, response, logger) {
 
   if (subcmd === 'set') {
     var name = argv[2];
-    var template = unescapeLinks(argv.slice(3).join(' '));
+    if (config.reservedMacros.indexOf(name) != -1) {
+      response.end(errMsgs.nameReserved);
+      return;
+    };
 
-    if (template.length <= 0) {
-      response.end(errMsgs.cantBeEmpty);
-      return;
-    } else if (badBrackets(template)) {
-      response.end(errMsgs.badBrackets);
-      return;
-    } else if (isRecursive(name, template)) {
-      response.end(errMsgs.cantBeRecursive);
-      return;
-    }
+    var template = unescapeLinks(argv.slice(3).join(' '));
 
     var oldTemplate = macros[name];
     addMacro(name, template, function(err) {
@@ -189,9 +260,12 @@ var macro = function macro(argv, message, response, logger) {
     var resBody = Object.keys(macros)
       .map(function(key) {
         if (!expand) return key;
+        var macro = macros[key];
         return lfmt.format('{{name}} - ```{{template}}```', {
           name: key,
-          template: macros[key]
+          template: typeof macro === 'function' ?
+            lfmt.format('<builtin - {{description}}>', macro) :
+            macro
         });
       })
       .join(expand ? '\n': ', ');
@@ -200,13 +274,22 @@ var macro = function macro(argv, message, response, logger) {
     response.end(resBody);
   }
   else {
-    var name = subcmd;
-    applyMacro(name, argv.slice(2), function(err, result) {
-      var reply = result || errMsgs.noMacro;
-      logger.log(lfmt.format('Sending reply: {{reply}}', {
-        reply: reply
-      }));
-      response.end(reply);
+    var callee = subcmd;
+    var tokens = tokenizeExpr(argv.slice(2).join(' '));
+    parseTokens(tokens, callee, function(err, result) {
+      if (err) {
+        logger.log(lfmt.format('Got error: {{error}}', {
+          error: err
+        }));
+        response.end(err.toString());
+      }
+      else {
+        var reply = result || errMsgs.emptyResponse;
+        logger.log(lfmt.format('Sending reply: {{reply}}', {
+          reply: reply
+        }));
+        response.end(reply);
+      }
     });
   }
 };
@@ -221,7 +304,8 @@ macro.metadata = {
       description: 'Set a string template macro',
       usage: 'macro set {name} {template}'
     }
-  }
+  },
+  reservedMacros: ['set', 'list', 'slackbot', 'random', 'if', 'split']
 };
 
 module.exports = macro;
