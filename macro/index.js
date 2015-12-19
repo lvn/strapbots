@@ -186,28 +186,6 @@ var parseTokens = function parseTokens(tokens, callee, cb, callStack) {
   baseApplyMacro(stackFrame.callee, stackFrame.args, cb);
 };
 
-var applyMacro = function applyMacro(name, args, cb) {
-  var template = macros[name];
-  if (!template) {
-    cb && cb(new Error('Macro not found'));
-    return;
-  }
-
-  var result;
-  if (typeof template === 'function') {
-    template(cb, args);
-  }
-  else {
-    result = template
-      .replace(/\$@/g, args.join(' '))
-      .replace(/\$(\d+)/g, function(match, p1) {
-        return (args[Number(p1)] || '');
-      });
-    cb && resolveNesting(result, cb);
-  }
-};
-
-
 // extract and replace formatted URLs.
 var unescapeLinks = function unescape(message) {
   var linkRegex = /<([^(#C)(@U)\!][^\|]*)\|*(.*)>/;
