@@ -151,7 +151,7 @@ var parseTokens = function parseTokens(tokens, callee, cb, callStack) {
     var token = tokens.shift();
     if (token === OPENBRK) {
       var newCallee = tokens.shift();
-      if (callStack.indexOf(newCallee) != -1) {
+      if (callStack.length > 500) {
         cb(new Error(errMsgs.cantBeRecursive));
         break;
       }
