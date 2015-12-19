@@ -258,6 +258,9 @@ var macro = function macro(argv, message, channel, client, response, config, log
   else if (subcmd === 'list') {
     var expand = (argv.indexOf('--expand') !== -1);
     var resBody = Object.keys(macros)
+      .filter(function(key) {
+        return (!expand || argv.length < 4 || argv.indexOf(key) !== -1);
+      })
       .map(function(key) {
         if (!expand) return key;
         var macro = macros[key];
