@@ -259,7 +259,7 @@ var macro = function macro(argv, message, channel, client, response, config, log
     var expand = (argv.indexOf('--expand') !== -1);
     var resBody = Object.keys(macros)
       .filter(function(key) {
-        return (!expand || argv.length < 4 || argv.indexOf(key) !== -1);
+        return (!expand || argv.length < 4 || argv.slice(3).indexOf(key) !== -1);
       })
       .map(function(key) {
         if (!expand) return key;
