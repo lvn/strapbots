@@ -42,7 +42,7 @@ builtInMacros.map = function(cb, args) {
   };
   cb(valmap[key]);
 };
-builtInMacros.map.description = 'Builds a mapping.';
+builtInMacros.map.description = 'Takes the last argument as a lookup key in a mapping of every first argument to every second argument.';
 
 const OPENBRK = '$(';
 const CLOSEBRK = ')';
