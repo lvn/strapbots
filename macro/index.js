@@ -20,29 +20,63 @@ var errMsgs = {
 
 var builtInMacros = {};
 builtInMacros.echo = function(cb, args) {
-  cb(args.join(' '));
+  cb(null, args.join(' '));
 };
 builtInMacros.echo.description = 'returns the arguments'
 
 builtInMacros.if = function(cb, args) {
-  cb(args[0] ? args[1] : args[2]);
+  cb(null, args[0] ? args[1] : args[2]);
 };
 builtInMacros.if.description = 'if $0, then returns $1, else $2'
 
 builtInMacros.random = function(cb, args) {
-  cb(args[Math.floor(Math.random() * args.length)]);
+  cb(null, args[Math.floor(Math.random() * args.length)]);
 };
 builtInMacros.random.description = 'returns randomly from arguments';
 
-builtInMacros.map = function(cb, args) {
+builtInMacros.hmap = function(cb, args) {
   var valmap = {};
   var key = args.pop();
   while (args.length > 0) {
     valmap[args.shift()] = args.shift();
   };
-  cb(valmap[key]);
+  cb(null, valmap[key]);
 };
-builtInMacros.map.description = 'Takes the last argument as a lookup key in a mapping of every first argument to every second argument.';
+builtInMacros.hmap.description = 'takes the last argument as a lookup key in a mapping of every first argument to every second argument.';
+
+builtInMacros.map = function(cb, args) {
+  var callee = args.shift();
+  var aggResult = [];
+  var stack = this.stack;
+  Array.prototype.concat.apply([], args).forEach(function(arg) {
+    baseApplyMacro(callee, [arg], function(err, result) {
+      aggResult.push(result);
+    }, stack);
+  });
+  cb(null, aggResult.join(' '));
+};
+builtInMacros.map.description = 'Returns the aggregate result of every argument passed through the same macro.';
+
+builtInMacros.apply = function(cb, args) {
+  baseApplyMacro(args[0], args[1].split(' '), cb, this.stack);
+};
+builtInMacros.apply.description = 'Applies the macro as given by $0, using $1 (split by spaces) as the arguments.';
+
+builtInMacros.splitc = function(cb, args) {
+  cb(null, args.join('').split('').join(' '));
+};
+builtInMacros.apply.description = 'Returns the arguments split into string-delmited characters';
+
+builtInMacros.grid = function(cb, args) {
+  var parts = args.join(' ').split(' ');
+  var result = '';
+  parts.forEach(function() {
+    result += parts.join(' ') + '\n';
+    parts.push(parts.shift());  // cycle first element to the end
+  });
+  cb(null, result);
+};
+builtInMacros.grid.description = 'Makes a grid out of word shifts';
 
 const OPENBRK = '$(';
 const CLOSEBRK = ')';
@@ -96,9 +130,9 @@ var baseApplyMacro = function baseApplyMacro(callee, args, cb, callStack) {
 
   var result;
   if (typeof template === 'function') {
-    template(function(result) {
-      cb && cb(null, result);
-    }, args);
+    template.call({
+      stack: callStack
+    }, cb, args);
   }
   else {
     // this converts it to valid macro source.
@@ -186,6 +220,11 @@ var parseTokens = function parseTokens(tokens, callee, cb, callStack) {
   baseApplyMacro(stackFrame.callee, stackFrame.args, cb);
 };
 
+var interpretExpr = function interpretExpr(expr, cb) {
+  var tokens = tokenizeExpr(expr);
+  parseTokens(tokens, 'echo', cb);
+};
+
 // extract and replace formatted URLs.
 var unescapeLinks = function unescape(message) {
   var linkRegex = /<([^(#C)(@U)\!][^\|]*)\|*(.*)>/;
@@ -194,7 +233,7 @@ var unescapeLinks = function unescape(message) {
   });
 };
 
-var macro = function macro(argv, message, channel, client, response, config, logger) {
+var macro = function macro(argv, message, response, config, logger) {
   logger.log('macro called with message', message);
   loadMacros();
 
