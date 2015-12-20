@@ -305,7 +305,8 @@ var macro = function macro(argv, message, response, config, logger) {
       }
       else {
         var reply = result || errMsgs.emptyResponse;
-        logger.log(lfmt.format('Sending reply: {{reply}}', {
+        logger.log(lfmt.format('Sending reply to {{channel}}: {{reply}}', {
+          channel: response.channel.name,
           reply: reply
         }));
         response.end(reply);
