@@ -2,7 +2,7 @@
   "name": "wa",
   "command": ["wolfram-alpha", "wa"],
   "description": "Ask Wolfram Alpha stuff.",
-  "usage": "wa ask [expression]",
+  "usage": "wa [query]",
   "errMsgs": {
     "generic": ":question: :question: :question: :question: :question:",
     "exprError": ":expressionless:"
