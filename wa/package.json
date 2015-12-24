@@ -1,0 +1,20 @@
+{
+  "name": "botstrap-wa",
+  "version": "1.0.0",
+  "description": "Wolfram Alpha integration for Botstrap",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "botstrap",
+    "slack",
+    "wolfram",
+    "alpha"
+  ],
+  "author": "Elvin Yung <elvin@elvinyung.com>",
+  "license": "MIT",
+  "dependencies": {
+    "wolfram-alpha": "^0.3.0"
+  }
+}

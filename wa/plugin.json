@@ -1,0 +1,10 @@
+{
+  "name": "wa",
+  "command": ["wolfram-alpha", "wa"],
+  "description": "Ask Wolfram Alpha stuff.",
+  "usage": "wa ask [expression]",
+  "errMsgs": {
+    "generic": ":question: :question: :question: :question: :question:",
+    "exprError": ":expressionless:"
+  }
+}
