@@ -14,7 +14,7 @@ var errMsgs = {
   cantBeRecursive: 'Macro can\'t be recursive!',
   badBrackets: 'Macro has mismatched brackets!',
   noMacros: 'There are no macros.',
-  nameReserved: 'Can\'t overwrite a reserved name!',
+  nameReserved: 'Can\'t overwrite a builtin macro.',
   emptyResponse: '<result was empty>'
 };
 
@@ -266,7 +266,7 @@ var macro = function macro(argv, message, response, config, logger) {
 
   if (subcmd === 'set') {
     var name = argv[2];
-    if (config.reservedMacros.indexOf(name) != -1) {
+    if (builtInMacros[name] != -1) {
       response.end(errMsgs.nameReserved);
       return;
     };
@@ -341,8 +341,7 @@ macro.metadata = {
       description: 'Set a string template macro',
       usage: 'macro set {name} {template}'
     }
-  },
-  reservedMacros: ['set', 'list', 'slackbot', 'random', 'if', 'split']
+  }
 };
 
 module.exports = macro;
