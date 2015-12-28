@@ -83,9 +83,15 @@ builtInMacros.replace = function(cb, args) {
   var pattern = args[1];
   var replacement = args[2];
 
-  cb(null, text.replace(new RegExp(pattern, 'g'), replacement));
+  try {
+    var result = text.replace(new RegExp(pattern, 'g'), replacement);
+    cb(null, result);
+  }
+  catch (e) {
+    cb(new Error('Bad regex `' + pattern + '`'));
+  }
 };
-builtInMacros.replace.description = 'Given $0 as text, replace all instances of $1 (string or regex) with $2';
+builtInMacros.replace.description = 'Given $0 as text, replace all instances of $1 (regex) with $2';
 
 const OPENBRK = '$(';
 const CLOSEBRK = ')';
