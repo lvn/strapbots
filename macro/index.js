@@ -266,7 +266,7 @@ var macro = function macro(argv, message, response, config, logger) {
 
   if (subcmd === 'set') {
     var name = argv[2];
-    if (builtInMacros[name] != -1) {
+    if (builtInMacros[name]) {
       response.end(errMsgs.nameReserved);
       return;
     };
