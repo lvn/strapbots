@@ -22,7 +22,8 @@ var builtInMacros = {};
 builtInMacros.echo = function(cb, args) {
   cb(null, args.join(' '));
 };
-builtInMacros.echo.description = 'returns the arguments'
+builtInMacros.echo.description = 'returns the arguments';
+builtInMacros.e = builtInMacros.echo;
 
 builtInMacros.if = function(cb, args) {
   cb(null, args[0] ? args[1] : args[2]);
