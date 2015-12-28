@@ -78,6 +78,14 @@ builtInMacros.grid = function(cb, args) {
 };
 builtInMacros.grid.description = 'Makes a grid out of word shifts';
 
+builtInMacros.replace = function(cb, args) {
+  var text = args[0] || '';
+  var pattern = args[1];
+  var replacement = args[2];
+
+  cb(null, text.replace(new RegExp(pattern, 'g'), replacement));
+};
+
 const OPENBRK = '$(';
 const CLOSEBRK = ')';
 
