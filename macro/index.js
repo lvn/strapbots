@@ -331,17 +331,6 @@ var macro = function macro(argv, message, response, config, logger) {
   }
 };
 
-macro.metadata = {
-  name: 'macro',
-  command: 'macro',
-  description: 'Manipulate string template macros',
-  subcommands: {
-    'set': {
-      name: 'set',
-      description: 'Set a string template macro',
-      usage: 'macro set {name} {template}'
-    }
-  }
-};
+macro.metadata = require('./plugin');
 
 module.exports = macro;

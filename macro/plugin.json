@@ -1,0 +1,17 @@
+{
+  "name": "macro",
+  "command": "macro",
+  "description": "Manipulate string template macros",
+  "subcommands": {
+    "set": {
+      "name": "set",
+      "description": "Set a string template macro",
+      "usage": "macro set {name} {template}"
+    },
+    "list": {
+      "name": "list",
+      "description": "List or search for macros",
+      "usage": "macro list [--expand|-e] {names...}"
+    }
+  }
+}
