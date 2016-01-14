@@ -111,8 +111,11 @@ var loadMacros = function loadMacros() {
         // TODO: catch errors for records with no space
         var spaceIndex = record.indexOf(' '),
           name = record.slice(0, spaceIndex),
-          template = record.slice(spaceIndex + 1);
-        macros[name] = decodeURIComponent(template);
+          template = decodeURIComponent(record.slice(spaceIndex + 1));
+
+        template.length > 0 ?
+          (macros[name] = template) :
+          (delete macros[name]);
 
         console.log(lfmt.format('loading macro {{name}} `{{template}}`', {
           name: name,
@@ -127,14 +130,30 @@ var loadMacros = function loadMacros() {
 };
 
 var addMacro = function addMacro(name, template, cb) {
-  macros[name] = template;
+  template.length > 0 ?
+    (macros[name] = template) :
+    (delete macros[name]);
+
   fs.appendFile(saveFile, lfmt.format('{{name}} {{template}}\n', {
     name: name,
     template: encodeURIComponent(template)
   }), function(err) {
     if (err) console.error(err);
-    cb && cb();
+    cb && cb(null);
   });
+};
+
+var removeMacro = function removeMacro(name, cb) {
+  if (macros[name]) {
+    var oldTemplate = macros[name];
+    addMacro(name, '', function(err) {
+      if (err) console.error(err);
+      cb && cb(null, oldTemplate);
+    });
+  }
+  else {
+    cb && cb(new Error(errMsgs.noMacro));
+  }
 };
 
 var baseApplyMacro = function baseApplyMacro(callee, args, cb, callStack) {
@@ -308,6 +327,29 @@ var macro = function macro(argv, message, response, config, logger) {
 
     resBody = resBody || errMsgs.noMacros;
     response.end(resBody);
+  }
+  else if (subcmd === 'unset') {
+    var name = argv[2];
+    if (builtInMacros[name]) {
+      response.end(errMsgs.nameReserved);
+      return;
+    };
+
+    removeMacro(name, function(err, result) {
+      if (!err) {
+        response.end(lfmt.format(['It is done. The macro `{{name}}` will trouble you no more.',
+          'For the record, it used to be ```{{template}}```'].join('\n'), {
+            name: name,
+            template: result
+          }));
+      }
+      else {
+        response.endf('Error unsetting macro {{name}}: {{error}}', {
+          name: name,
+          error: err
+        });
+      }
+    });
   }
   else {
     var callee = subcmd;
