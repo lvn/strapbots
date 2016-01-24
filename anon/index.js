@@ -3,7 +3,7 @@
 let anon = function anon(argv, channels, response, config, logger) {
   let channelIdFmt = argv[1];
   let msg = argv.slice(2).join(' ');
-  let match = /<#(.*)>/.exec(channelIdFmt);
+  let match = /<#(\w*)(\|.*)?>/.exec(channelIdFmt);
   let channelId = (match || [])[1];
   let channel = channels[channelId];
 
