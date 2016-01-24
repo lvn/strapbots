@@ -7,7 +7,7 @@ let anon = function anon(argv, channels, response, config, logger) {
   let channelId = (match || [])[1];
   let channel = channels[channelId];
 
-  if (channelId && msg && msg.length < 4000) {
+  if (channel && !channel.is_archived && msg && msg.length < 4000) {
     response.channel = channel;
     response.endf('{{anonName}} said: \n>>>{{msg}}', {
       anonName: config.anonName,
