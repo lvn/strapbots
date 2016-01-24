@@ -1,0 +1,16 @@
+{
+  "name": "botstrap-anon",
+  "version": "1.0.0",
+  "description": "Anonymously say things on Slack",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "slack",
+    "botstrap",
+    "anonymous"
+  ],
+  "author": "Elvin Yung <elvin@elvinyung.com>",
+  "license": "MIT"
+}

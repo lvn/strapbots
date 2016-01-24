@@ -1,0 +1,12 @@
+{
+  "name": "anon",
+  "command": ["anon", "anonsay"],
+  "description": "Say stuff anonymously",
+  "usage": [
+    "anon <channel> <msg>"
+  ],
+  "errMsgs": {
+    "noChannel": ":slack: :question:"
+  },
+  "anonName": "Someone"
+}
