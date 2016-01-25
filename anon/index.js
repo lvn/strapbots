@@ -8,6 +8,14 @@ let anon = function anon(argv, channels, response, config, logger) {
   let channel = channels[channelId];
 
   if (channel && !channel.is_archived && msg && msg.length < 4000) {
+
+    if (!channel.is_member) {
+      response.endf('Thanks for invite to {{channel}}', {
+        channel: channelIdFmt
+      });
+      return;
+    }
+
     response.channel = channel;
     response.endf('{{anonName}} said: \n>>>{{msg}}', {
       anonName: config.anonName,
