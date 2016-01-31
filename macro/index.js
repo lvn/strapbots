@@ -15,7 +15,9 @@ var errMsgs = {
   badBrackets: 'Macro has mismatched brackets!',
   noMacros: 'There are no macros.',
   nameReserved: 'Can\'t overwrite a builtin macro.',
-  emptyResponse: '<result was empty>'
+  emptyResponse: '<result was empty>',
+  removedMacro: `It is done. The macro \`{{name}}\` will trouble you no more.
+For the record, it used to be \`\`\`{{template}}\`\`\``
 };
 
 var builtInMacros = {};
@@ -295,14 +297,22 @@ var macro = function macro(argv, message, response, config, logger) {
     var oldTemplate = macros[name];
     addMacro(name, template, function(err) {
       if (!err) {
-        var respBody = (oldTemplate ?
-          lfmt.format('Overwriting old template ```{{oldTemplate}}```\n', {
-            oldTemplate: oldTemplate
-          }) : '');
-        respBody += lfmt.format('Successfully macroed {{name}} to ```{{template}}```', {
-          name: name,
-          template: template
-        })
+        if (template.length >= 0) {
+          var respBody = (oldTemplate ?
+            lfmt.format('Overwriting old template ```{{oldTemplate}}```\n', {
+              oldTemplate: oldTemplate
+            }) : '');
+          respBody += lfmt.format('Successfully macroed {{name}} to ```{{template}}```', {
+            name: name,
+            template: template
+          });
+        }
+        else {
+          response.endf(errMsgs.removedMacro, {
+            name: name,
+            template: oldTemplate
+          });
+        }
         response.end(respBody);
       }
     });
@@ -337,11 +347,10 @@ var macro = function macro(argv, message, response, config, logger) {
 
     removeMacro(name, function(err, result) {
       if (!err) {
-        response.end(lfmt.format(['It is done. The macro `{{name}}` will trouble you no more.',
-          'For the record, it used to be ```{{template}}```'].join('\n'), {
-            name: name,
-            template: result
-          }));
+        response.endf(errMsgs.removedMacro, {
+          name: name,
+          template: result
+        });
       }
       else {
         response.endf('Error unsetting macro {{name}}: {{error}}', {
