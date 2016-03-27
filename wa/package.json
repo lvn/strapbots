@@ -1,6 +1,6 @@
 {
   "name": "botstrap-wa",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Wolfram Alpha integration for Botstrap",
   "main": "index.js",
   "scripts": {
