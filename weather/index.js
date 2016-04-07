@@ -57,6 +57,12 @@ var tempUnit = {
   'default': '°K'
 };
 
+var tempUnitWords = {
+  'metric': ['c', 'celsius', 'metric'],
+  'imperial': ['f', 'fahrenheit', 'imperial'],
+  'default': ['k', 'kelvin', 'in kelvin']
+};
+
 var ms = {}
 ms.inSecond = 1000;
 ms.inMinute = 60 * ms.inSecond;
@@ -84,9 +90,27 @@ var cmpDate = function cmpDate(a, b, threshold) {
   return Math.abs(diff) > threshold ? diff : 0;
 };
 
+// in-place remove the item from the array, if it exists.
+var tryRemove = function tryRemove(arr, item) {
+  var indx = arr.indexOf(item);
+  return indx == -1 ? arr[-1] : arr.splice(indx, 1);
+};
+
 // parse a query for the location and time.
-var parseQuery = function parseQuery(query) {
+var parseQuery = function parseQuery(query, config) {
+  config = config || {};
   var result = {};
+
+  var queryWords = query.split(' ');
+  result.units = Object.keys(tempUnitWords).find(function(unit) {
+    return tempUnitWords[unit].some(function(word) {
+      return tryRemove(queryWords, word);
+    });
+  }) || config.units;
+
+  result.detailed = !!tryRemove(queryWords, 'detailed');
+  query = queryWords.join(' ');
+
   var parsedChrono = chrono.parse(query)[0];
 
   if (parsedChrono) {
@@ -116,8 +140,7 @@ var parseBody = function parseBody(body, query, config) {
 
 
   if (queryName != actualName) {
-      resBody += 'Assuming ' + cityName + ', '
-        + location.country + ': ';
+      resBody += `Assuming ${cityName}, ${location.country}:`;
   }
 
   // add weather icons
@@ -125,10 +148,21 @@ var parseBody = function parseBody(body, query, config) {
   resBody += iconToEmoji(body.weather[0].icon);
 
   // add wind icons
-  resBody += renderWindEmoji(body.wind.speed, config.units) + ' ';
+  resBody += renderWindEmoji(body.wind.speed, query.units) + ' ';
 
   if (typeof body.main.temp === 'number') {
-    resBody += body.main.temp + ' ' + tempUnit[config.units];
+    resBody += `${body.main.temp} ${tempUnit[query.units]}`;
+  }
+
+  if (query.mode != config.endpoints.default) {
+    resBody += ' on ' + moment(query.when)
+      .format(config.dateFormat);
+  }
+
+  if (query.detailed) {
+    resBody += '\n\n';
+    resBody += `low: ${body.main.temp_min} ${tempUnit[query.units]}\n`;
+    resBody += `high: ${body.main.temp_max} ${tempUnit[query.units]}\n`;
   }
 
   return resBody;
@@ -144,12 +178,9 @@ var parseBodyForecast = function parseBodyForecast(body, query, config) {
     var forecastEntry = body.list[indx];
 
     forecastEntry.sys = body.city;  // hack: normalize forcast format
-    var resBody = parseBody(forecastEntry, query, config);
+    query.when = forecastEntry.dt * ms.inSecond
 
-    resBody += ' on ' + moment(forecastEntry.dt * ms.inSecond)
-      .format(config.dateFormat);
-
-    return resBody;
+    return parseBody(forecastEntry, query, config);
   };
 
   return config.errMsgs.cantSeeFuture;
@@ -166,14 +197,14 @@ var bodyParsers = {
 };
 
 var main = function main(argv, response, logger, config) {
-  var query = parseQuery(argv.slice(1).join(' '));
+  var query = parseQuery(argv.slice(1).join(' '), config);
   query.where = query.where || config.defaultLoc;
   var queryTime = query.when;
   var timeDiff = cmpDate(queryTime);
 
   // config things
   var apiRoot = config.apiRoot;
-  var apiEndpoint = (
+  var apiEndpoint = query.mode = (
     (timeDiff > 0 && config.endpoints.forecast) ||
     (timeDiff < 0 && config.endpoints.history) ||
     config.endpoints.default);
@@ -188,7 +219,7 @@ var main = function main(argv, response, logger, config) {
   var reqUrl = apiRoot + apiEndpoint + '?' + qs.stringify({
     appid: appId,
     q: query.where,
-    units: config.units
+    units: query.units
   });
 
   if (apiEndpoint === config.endpoints.history) {
