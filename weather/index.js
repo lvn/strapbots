@@ -60,7 +60,7 @@ var tempUnit = {
 var tempUnitWords = {
   'metric': ['c', 'celsius', 'metric'],
   'imperial': ['f', 'fahrenheit', 'imperial'],
-  'default': ['k', 'kelvin', 'in kelvin']
+  'default': ['k', 'kelvin']
 };
 
 var ms = {}
@@ -140,7 +140,7 @@ var parseBody = function parseBody(body, query, config) {
 
 
   if (queryName != actualName) {
-      resBody += `Assuming ${cityName}, ${location.country}:`;
+      resBody += `Assuming ${cityName}, ${location.country}: `;
   }
 
   // add weather icons
