@@ -13,13 +13,13 @@ var iconToEmoji = util.iconToEmoji;
 var toKmPerHr = util.toKmPerHr;
 var renderWindEmoji  = util.renderWindEmoji;
 
-var tempUnit = {
+const tempUnit = {
   'metric': '°C',
   'imperial': '°F',
   'default': '°K'
 };
 
-var tempUnitWords = {
+const tempUnitWords = {
   'metric': ['c', 'celsius', 'metric'],
   'imperial': ['f', 'fahrenheit', 'imperial'],
   'default': ['k', 'kelvin']
@@ -31,7 +31,7 @@ ms.inMinute = 60 * ms.inSecond;
 ms.inHour = 60 * ms.inMinute;
 ms.inDay = 24 * ms.inHour;
 
-var NONE = 'none';
+const NONE = 'none';
 
 // parse a query for the location and time.
 var parseQuery = function parseQuery(query, config) {
