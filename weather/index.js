@@ -10,8 +10,8 @@ var normalize = util.normalize;
 var cmpDate = util.cmpDate;
 var tryRemove = util.tryRemove;
 var iconToEmoji = util.iconToEmoji;
-var toKmPerHr = util.toKmPerHr;
 var renderWindEmoji  = util.renderWindEmoji;
+var ms = util.ms;
 
 const tempUnit = {
   'metric': '°C',
@@ -24,12 +24,6 @@ const tempUnitWords = {
   'imperial': ['f', 'fahrenheit', 'imperial'],
   'default': ['k', 'kelvin']
 };
-
-var ms = {}
-ms.inSecond = 1000;
-ms.inMinute = 60 * ms.inSecond;
-ms.inHour = 60 * ms.inMinute;
-ms.inDay = 24 * ms.inHour;
 
 const NONE = 'none';
 
