@@ -8,7 +8,7 @@ let fs = require('fs');
 
 let sw = null;
 
-let slackwise = (user, message, config, logger, response) => {
+let slackwise = (user, argv, config, logger, response) => {
   sw.getGroup(config.swGroupId, (error, data, _) => {
     if (error) {
       logger.error(`Splitwise API error ${JSON.stringify(error)}`);
@@ -18,6 +18,7 @@ let slackwise = (user, message, config, logger, response) => {
     let groupData = JSON.parse(data).group;
     let groupMembers = {};
     let balanceGraph = graphviz.digraph("Debts");
+    let fullGraph = !!argv.find(arg => arg === '--full');
 
     groupData.members.forEach(member => {
       member.fullName = util.formatName(member);
@@ -27,11 +28,12 @@ let slackwise = (user, message, config, logger, response) => {
       });
     });
 
-    groupData.simplified_debts.forEach(debt => {
-      let edge = balanceGraph.addEdge(`${debt.from}`, `${debt.to}`, {
-        label: util.formatDebtLabel(debt, config.defaultCurrencyCode)
+    (fullGraph ? groupData.original_debts : groupData.simplified_debts)
+      .forEach(debt => {
+        let edge = balanceGraph.addEdge(`${debt.from}`, `${debt.to}`, {
+          label: util.formatDebtLabel(debt, config.defaultCurrencyCode)
+        });
       });
-    });
 
     let imgPath = `/tmp/balanceGraph${Date.now()}.png`;
     balanceGraph.output('png', (rendered) => {
