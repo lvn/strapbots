@@ -1,0 +1,22 @@
+{
+  "name": "botstrap-slackwise",
+  "version": "1.0.0",
+  "description": "Botstrap Splitwise integration",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "botstrap",
+    "splitwise",
+    "slack"
+  ],
+  "author": "Elvin Yung <elvin@elvinyung.com>",
+  "license": "MIT",
+  "dependencies": {
+    "graphviz": "0.0.8",
+    "imgur": "^0.1.7",
+    "oauth": "^0.9.14",
+    "requests": "^0.1.7"
+  }
+}
