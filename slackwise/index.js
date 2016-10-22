@@ -7,18 +7,84 @@ let graphviz = require('graphviz');
 let fs = require('fs');
 
 let sw = null;
+let _logger = null;
+let swIdMap = null;  // a map of slack id => splitwise id
 
-let slackwise = (user, argv, config, logger, response) => {
-  sw.getGroup(config.swGroupId, (error, data, _) => {
+let addDebt = (from, to, amount, config, cb) => {
+
+}
+
+let listDebts = (target, fromOrTo, config, cb) => {
+  let swTargetId = swIdMap[target.id]
+  if (typeof swTargetId === 'undefined') {
+    _logger.error(`User id ${target.id} (${target.name}) doesn't match anyone`);
+  }
+
+  sw.getGroup((error, data, _) => {
     if (error) {
-      logger.error(`Splitwise API error ${JSON.stringify(error)}`);
+      _logger.error(`Splitwise API error ${JSON.stringify(error)}`);
+      return;
+    }
+
+    let groupData = data.group;
+
+    // let debits = group.original_debts
+    //   .filter(entry => entry.from == swTargetId)
+    //   .map(entry => `${util.formatDebtLabel(entry, config.defaultCurrencyCode)} to ${entry.to}`)
+
+    let credits = group.original_debts
+      .filter(entry => entry.to == swTargetId)
+      .map(entry => `${util.formatDebtLabel(entry, config.defaultCurrencyCode)} from ${entry.from}`)
+
+    let formattedOutput = [util.listFormat(debits), util.listFormat(credits)].join();
+
+    cb(formattedOutput);
+  });
+};
+
+let getBalance = (target, config, cb) => {
+  sw.getGroup((error, data, _) => {
+    if (error) {
+      _logger.error(`Splitwise API error ${JSON.stringify(error)}`);
+      return;
+    }
+
+    if (!config.swIdMap[target.id]) {
+      cb(null, `I don't know who ${target.real_name} is on Splitwise!`);
+    }
+
+    let memberData = JSON.parse(data).group.members
+      .find(member => member.id === config.swIdMap[target.id]);
+
+    if (memberData) {
+      let processBalance = (bal) => {
+        return {
+          amount: util.parseAmount(bal.amount),
+          currency: bal.currency_code
+        };
+      };
+      let processedBalances = memberData.balance.map(processBalance);
+
+      let result = {
+        owes: processedBalances.filter(bal => bal.amount < 0),
+        owed: processedBalances.filter(bal => bal.amount > 0)
+      };
+
+      cb(result);
+    }
+  });
+}
+
+let graphDebts = (fullGraph, config, cb) => {
+  sw.getGroup((error, data, _) => {
+    if (error) {
+      _logger.error(`Splitwise API error ${JSON.stringify(error)}`);
       return;
     }
 
     let groupData = JSON.parse(data).group;
     let groupMembers = {};
-    let balanceGraph = graphviz.digraph("Debts");
-    let fullGraph = !!argv.find(arg => arg === '--full');
+    let balanceGraph = graphviz.digraph('Debts');
 
     groupData.members.forEach(member => {
       member.fullName = util.formatName(member);
@@ -39,19 +105,70 @@ let slackwise = (user, argv, config, logger, response) => {
     balanceGraph.output('png', (rendered) => {
       fs.writeFile(imgPath, rendered, () => {
         imgur.uploadFile(imgPath)
-          .then(res => response.end(res.data.link))
+          .then(res => cb(res.data.link))
           .catch(error => {
-            logger.error(`Error uploading splitwise graph to imgur: ${error.message}`);
+            _logger.error(`Error uploading splitwise graph to imgur: ${error.message}`);
           });
       });
     });
   });
 };
 
-slackwise.setup = (config) => {
+let slackwise = (user, users, argv, config, logger, response) => {
+  argv.shift();
+  let subcmd = argv.shift();
+  if (subcmd === 'graph') {
+    let drawFullGraph = !!argv.some(item => item === '--full');
+    graphDebts(drawFullGraph, config, imgUrl => response.end(imgUrl));
+  }
+  else if (subcmd === 'balance') {
+    let arg = argv.shift();
+    let target;
+
+    try {
+      target = users[arg ? util.parseUserTag(arg) : user.id];
+
+      if (typeof target === 'undefined') {
+        throw 'Don\'t know who this is lol';
+      }
+    }
+    catch (e) {
+      response.end(`I don't know who "${arg}" is!`);
+      return;
+    }
+
+    getBalance(target, config, (balances, err) => {
+      if (err) {
+        response.end(err);
+        return;
+      }
+
+      if (balances.owes.length) {
+        response.write(`${target.real_name} owes:\n`);
+        response.write(balances.owes.map(bal => {
+          return `• ${util.formatAmount(-bal.amount, bal.currency)}`
+        }).join('\n'));
+        response.write('\n\n');
+      }
+
+      if (balances.owed.length) {
+        response.write(`${target.real_name} is owed:\n`);
+        response.write(balances.owed.map(bal => {
+          return `• ${util.formatAmount(bal.amount, bal.currency)}`
+        }).join('\n'));
+      }
+
+      response.end();
+    });
+  }
+};
+
+slackwise.setup = (config, logger) => {
   sw = new Splitwise(config.swConsumerKey, config.swConsumerSecret,
-    config.swAccessToken, config.swAccessTokenSecret);
+    config.swAccessToken, config.swAccessTokenSecret, config.swGroupId);
   imgur.setClientId(config.imgurClientId);
+  _logger = logger;
+  swIdMap = config.swIdMap;
 };
 
 slackwise.metadata = require('./plugin');

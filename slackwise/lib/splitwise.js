@@ -20,17 +20,18 @@ let swAuthorize = (consumerKey, consumerSecret) => {
 };
 
 class Splitwise {
-  constructor(consumerKey, consumerSecret, accessToken, accessTokenSecret) {
+  constructor(consumerKey, consumerSecret, accessToken, accessTokenSecret, groupId) {
     this.consumerKey = consumerKey;
     this.consumerSecret = consumerSecret;
     this.accessToken = accessToken;
     this.accessTokenSecret = accessTokenSecret;
+    this.groupId = groupId;
     this.consumer = swAuthorize(consumerKey, consumerSecret);
   }
 
-  getGroup(groupId, callback) {
+  getGroup(callback) {
     this.consumer.get(
-      `${getEndpointUrl('get_group')}/${groupId}`,
+      `${getEndpointUrl('get_group')}/${this.groupId}`,
       this.accessToken,
       this.accessTokenSecret,
       callback
