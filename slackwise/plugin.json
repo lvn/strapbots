@@ -7,6 +7,14 @@
       "name": "graph",
       "description": "Show a graph of all the balances in the group",
       "usage": "splitwise graph"
+    },
+    "balance": {
+      "name": "balance",
+      "description": "Shows outstandanding balances in all currencies",
+      "usage": [
+        "splitwise balance",
+        "splitwise balance [target]"
+      ]
     }
   }
 }
