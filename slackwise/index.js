@@ -97,7 +97,8 @@ let graphDebts = (fullGraph, config, cb) => {
     (fullGraph ? groupData.original_debts : groupData.simplified_debts)
       .forEach(debt => {
         let edge = balanceGraph.addEdge(`${debt.from}`, `${debt.to}`, {
-          label: util.formatDebtLabel(debt, config.defaultCurrencyCode)
+          label: util.formatAmount(debt.amount, debt.currency_code,
+            config.currencies)
         });
       });
 
@@ -146,7 +147,8 @@ let slackwise = (user, users, argv, config, logger, response) => {
       if (balances.owes.length) {
         response.write(`${target.real_name} owes:\n`);
         response.write(balances.owes.map(bal => {
-          return `• ${util.formatAmount(-bal.amount, bal.currency)}`
+          return `• ${util.formatAmount(-bal.amount, bal.currency,
+            config.currencies)}`
         }).join('\n'));
         response.write('\n\n');
       }
@@ -154,7 +156,8 @@ let slackwise = (user, users, argv, config, logger, response) => {
       if (balances.owed.length) {
         response.write(`${target.real_name} is owed:\n`);
         response.write(balances.owed.map(bal => {
-          return `• ${util.formatAmount(bal.amount, bal.currency)}`
+          return `• ${util.formatAmount(bal.amount, bal.currency,
+            config.currencies)}`
         }).join('\n'));
       }
 

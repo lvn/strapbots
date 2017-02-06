@@ -1,14 +1,14 @@
 'use strict';
 
+let nodeUtil = require('util');
+
 exports.formatName = (member) => `${member.first_name || ''} ${member.last_name || ''}`;
 
-exports.formatDebtLabel = (debt, defaultCurrencyCode) => {
-  return debt.currency_code == defaultCurrencyCode ? `${debt.amount}` :
-  `${debt.amount} ${debt.currency_code}`;
-};
+exports.formatAmount = (amount, currencyCode, currencyConfig) => {
+  let formatStr = (currencyConfig && currencyConfig[currencyCode]) ||
+    `%d ${currencyCode}`;
 
-exports.formatAmount = (amount, currenyCode) => {
-  return `${amount} ${currenyCode}`;
+  return nodeUtil.format(formatStr, amount);
 };
 
 exports.parseAmount = (amount) => {
