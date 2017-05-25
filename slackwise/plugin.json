@@ -17,6 +17,9 @@
         "splitwise balance",
         "splitwise balance [target]"
       ]
+    },
+    "bal": {
+      "alias": "balance"
     }
   }
 }

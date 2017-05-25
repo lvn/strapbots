@@ -122,7 +122,7 @@ let slackwise = (user, users, argv, config, logger, response, helpService) => {
     let drawFullGraph = !!argv.some(item => item === '--full');
     graphDebts(drawFullGraph, config, imgUrl => response.end(imgUrl));
   }
-  else if (subcmd === 'balance') {
+  else if (subcmd === 'balance' || subcmd === 'bal') {
     let arg = argv.shift();
     let target;
 
