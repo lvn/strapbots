@@ -134,4 +134,17 @@ help.metadata = {
   usage: 'help {command}'
 };
 
+help.setup = (bot) => {
+  bot.service('helpService', (bot, logger) => {
+    return {
+      findCommand: findCommand,
+      renderHelpPage: renderHelpPage,
+      getHelpPage: query => renderHelpPage(query,
+        findCommand(bot.commands, query))
+    };
+  });
+
+  bot.command('help', help);
+}
+
 module.exports = help;
