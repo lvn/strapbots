@@ -6,7 +6,9 @@
     "graph": {
       "name": "graph",
       "description": "Show a graph of all the balances in the group",
-      "usage": "splitwise graph"
+      "usage": ["splitwise graph",
+        "splitwise graph --full"
+      ]
     },
     "balance": {
       "name": "balance",
