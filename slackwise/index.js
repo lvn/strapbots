@@ -115,8 +115,8 @@ let graphDebts = (fullGraph, config, cb) => {
   });
 };
 
-let slackwise = (user, users, argv, config, logger, response) => {
-  argv.shift();
+let slackwise = (user, users, argv, config, logger, response, helpService) => {
+  let cmdname = argv.shift();
   let subcmd = argv.shift();
   if (subcmd === 'graph') {
     let drawFullGraph = !!argv.some(item => item === '--full');
@@ -163,6 +163,9 @@ let slackwise = (user, users, argv, config, logger, response) => {
 
       response.end();
     });
+  } else {
+    let helpQuery = [cmdname].concat(argv);
+    response.end(helpService.getHelpPage(helpQuery));
   }
 };
 
