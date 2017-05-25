@@ -22,6 +22,10 @@ var findCommand = function findCommand(root, query) {
     var subcommands = node.metadata && node.metadata.subcommands || node;
     child = subcommands[target];
 
+    if (child.alias) {
+      child = subcommands[child.alias];
+    }
+
     if (!child) {
       break;
     }
