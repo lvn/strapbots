@@ -38,7 +38,7 @@ exports.listFormat = (list) => {
 
 exports.parseUserTag = (tag) => tag.match(/@(\w*)/)[1];
 
-exports.getEdgeWidth = (amount) => Math.sqrt(amount / 15);
+exports.getEdgeWidth = (amount) => Math.cbrt(amount / 15);
 
 exports.getBalanceColor = (balances) => {
   let total = balances.map(bal => new Number(bal.amount))
