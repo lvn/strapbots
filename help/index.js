@@ -73,6 +73,9 @@ var renderHelpPage = function buildHelpPage(query, command) {
     rendered += lfmt.format('\nSubcommands:')
     Object.keys(subcommands).forEach(function(key) {
       var subcommand = subcommands[key];
+      if (subcommand.alias) {
+        return;
+      }
       rendered += lfmt.format('\n- `{{name}}`: {{description}}', {
         name: subcommand.name,
         description: subcommand.description || errorMsgs.noDesc
