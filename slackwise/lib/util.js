@@ -40,12 +40,16 @@ exports.parseUserTag = (tag) => tag.match(/@(\w*)/)[1];
 
 exports.getEdgeWidth = (amount) => Math.min(Math.cbrt(amount / 15), 6);
 
-exports.getBalanceColor = (balances) => {
+exports.getBalanceColor = (colors, balances) => {
+  let neutralColor = colors.NEUTRAL || '#000000';
+  let owingColor = colors.OWING || '#FF0000';
+  let owedColor = colors.OWED || '#006400';
+
   let total = balances.map(bal => new Number(bal.amount))
     .reduce((acc, val) => acc + val, 0);
   if (total == 0) {
-    return '#000000';
+    return neutralColor;
   }
 
-  return (total < 0) ? '#FF0000' : '#006400';
+  return (total < 0) ? owingColor : owedColor;
 }

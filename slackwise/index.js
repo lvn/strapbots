@@ -82,6 +82,8 @@ let graphDebts = (fullGraph, config, cb) => {
       return;
     }
 
+    let graphConfig = config.graph || {};
+
     let groupData = JSON.parse(data).group;
     let groupMembers = {};
     let balanceGraph = graphviz.digraph('Debts');
@@ -94,10 +96,13 @@ let graphDebts = (fullGraph, config, cb) => {
 
 
       groupMembers[member.id] = member.fullName;
-      member.graphNode = balanceGraph.addNode(`${member.id}`, {
+      let graphNode  = balanceGraph.addNode(`${member.id}`, {
         label: member.fullName
       });
-      member.graphNode.set('color', util.getBalanceColor(member.balance));
+      graphNode.set('color', util.getBalanceColor(
+        graphConfig.nodeColors, member.balance));
+      graphNode.set('fontname', graphConfig.fontname);
+      member.graphNode = graphNode;
     });
 
     (fullGraph ? groupData.original_debts : groupData.simplified_debts)
@@ -109,6 +114,7 @@ let graphDebts = (fullGraph, config, cb) => {
         edge.set('color',
           util.getCurrencyColor(config.currencies, debt.currency_code));
         edge.set('penwidth', util.getEdgeWidth(debt.amount));
+        edge.set('fontname', graphConfig.fontname);
       });
 
     let imgPath = `/tmp/balanceGraph${Date.now()}.png`;
