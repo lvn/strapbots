@@ -85,8 +85,8 @@ let graphDebts = (fullGraph, config, cb) => {
     let groupData = JSON.parse(data).group;
     let groupMembers = {};
     let balanceGraph = graphviz.digraph('Debts');
-    balanceGraph.set('layout', 'neato');
-    balanceGraph.set('overlap', 'scalexy');
+    balanceGraph.set('layout', fullGraph ? 'dot' : 'neato');
+    balanceGraph.set('overlap', 'scale');
 
     groupData.members.forEach(member => {
       member.fullName = util.formatName(member);
