@@ -88,10 +88,14 @@ let graphDebts = (fullGraph, config, cb) => {
 
     groupData.members.forEach(member => {
       member.fullName = util.formatName(member);
+
+
+
       groupMembers[member.id] = member.fullName;
       member.graphNode = balanceGraph.addNode(`${member.id}`, {
         label: member.fullName
       });
+      member.graphNode.set('color', util.getBalanceColor(member.balance));
     });
 
     (fullGraph ? groupData.original_debts : groupData.simplified_debts)
@@ -100,6 +104,9 @@ let graphDebts = (fullGraph, config, cb) => {
           label: util.formatAmount(debt.amount, debt.currency_code,
             config.currencies)
         });
+        edge.set('color',
+          util.getCurrencyColor(config.currencies, debt.currency_code));
+        edge.set('penwidth', util.getEdgeWidth(debt.amount));
       });
 
     let imgPath = `/tmp/balanceGraph${Date.now()}.png`;
