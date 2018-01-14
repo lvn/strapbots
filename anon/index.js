@@ -11,11 +11,12 @@ let getAnonName = (userId) => {
 
 let anon = function anon(argv, channels, response, config, logger, message, emojiService) {
   let userId = message.sender.id;
-  let subcmd = argv[1];
+  let subcmd = argv[0];
   if (subcmd == 'reset') {
     Object.keys(usernames)
-      .filter((uname) => { uname.startsWith(userId) })
+      .filter((uname) => { return uname.startsWith(userId) })
       .forEach((uname) => { delete usernames[uname] });
+    message.react('+1');
   } else {
     let channelIdFmt = argv[1];
     let msg = argv.slice(2).join(' ');
