@@ -9,19 +9,27 @@ let getAnonName = (userId) => {
   }
 }
 
+let parseChannelId = (str) => {
+  let match = /<#(\w*)(\|.*)?>/.exec(str);
+  let channelId = (match || [])[1];
+  return match;
+};
+
 let anon = function anon(argv, channels, response, config, logger, message, emojiService) {
   let userId = message.sender.id;
   let subcmd = argv[1];
   if (subcmd == 'reset') {
+    let channelId = parseChannelId(argv[2]);
     Object.keys(usernames)
-      .filter((uname) => { return uname.startsWith(userId) })
+      .map(JSON.parse)
+      .filter((uname) => { return uname.userId == userId })
+      .filter((uname) => { return name.channelId ?
+          name.channelId == channelId : true; })
       .forEach((uname) => { delete usernames[uname] });
     message.react('+1');
   } else {
-    let channelIdFmt = argv[1];
+    let channelId = parseChannelId(argv[1]);
     let msg = argv.slice(2).join(' ');
-    let match = /<#(\w*)(\|.*)?>/.exec(channelIdFmt);
-    let channelId = (match || [])[1];
     let channel = channels[channelId];
 
     if (channel && !channel.is_archived && msg && msg.length < 4000) {
@@ -35,6 +43,10 @@ let anon = function anon(argv, channels, response, config, logger, message, emoj
 
       // assign anonName:
       let userKey = `${userId}/${channelId}`;
+      let userKey = JSON.stringify({
+        userId: userId,
+        channelId: channelId
+      });
       if (!usernames[userKey]) {
         var anonName = '';
         do {
