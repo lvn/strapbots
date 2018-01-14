@@ -1,6 +1,6 @@
 {
   "name": "botstrap-anon",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Anonymously say things on Slack",
   "main": "index.js",
   "scripts": {
