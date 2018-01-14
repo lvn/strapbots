@@ -11,7 +11,7 @@ let getAnonName = (userId) => {
 
 let anon = function anon(argv, channels, response, config, logger, message, emojiService) {
   let userId = message.sender.id;
-  let subcmd = argv[0];
+  let subcmd = argv[1];
   if (subcmd == 'reset') {
     Object.keys(usernames)
       .filter((uname) => { return uname.startsWith(userId) })
