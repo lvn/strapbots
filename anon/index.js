@@ -12,7 +12,7 @@ let getAnonName = (userId) => {
 let parseChannelId = (str) => {
   let match = /<#(\w*)(\|.*)?>/.exec(str);
   let channelId = (match || [])[1];
-  return match;
+  return channelId;
 };
 
 let anon = function anon(argv, channels, response, config, logger, message, emojiService) {
