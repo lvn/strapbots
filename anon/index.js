@@ -24,7 +24,7 @@ let anon = function anon(argv, channels, response, config, logger, message, emoj
       .map(JSON.parse)
       .filter((uname) => { return uname.userId == userId })
       .filter((uname) => { return uname.channelId ?
-          name.channelId == channelId : true; })
+          uname.channelId == channelId : true; })
       .map(JSON.stringify)
       .forEach((uname) => { delete usernames[uname] });
     message.react('+1');
